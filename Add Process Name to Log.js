@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Add Process Name To Log
 // @namespace    https://support.concurcompleat.com/Logs/Snippet/
-// @updateURL    https://github.com/thambley/tampermonkey-scripts/raw/master/Add%20Process%20Name%20to%20Log.user.js
+// @updateURL    https://raw.githubusercontent.com/thambley/compleat-tampermonkey/main/Add%20Process%20Name%20to%20Log.js
 // @version      0.4
 // @description  Add Process Name To Log Snippet page
 // @author       thambley@tlcorporate.com

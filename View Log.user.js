@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         View Log
 // @namespace    https://support.concurcompleat.com/Logs/Snippet/
-// @updateURL    https://github.com/thambley/tampermonkey-scripts/raw/master/View%20Log.user.js
+// @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/View%20Log.user.js
 // @version      0.22
 // @description  View formatted log text
 // @author       thambley@tlcorporate.com
