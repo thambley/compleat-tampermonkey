@@ -2,7 +2,7 @@
 // @name         View Log
 // @namespace    https://support.concurcompleat.com/Logs/Snippet/
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/View%20Log.user.js
-// @version      0.23
+// @version      0.24
 // @description  View formatted log text
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs/Snippet*
@@ -52,8 +52,9 @@
 
   button.onclick = function () {
     // https://stackoverflow.com/questions/11965087/open-a-new-tab-window-and-write-something-to-it#11967627
+    // https://stackoverflow.com/a/38866224 - addresses special handling of $$
     var tab = window.open('about:blank', '_blank');
-    tab.document.write(atob(htmlContent).replace('%FILENAME%', filename).replace('%LOGTEXT%', content)); // where 'html' is a variable containing your HTML
+    tab.document.write(atob(htmlContent).replace('%FILENAME%', filename).split('%LOGTEXT%').join(content.replace(/`/g, '\\`'))); // where 'html' is a variable containing your HTML
     tab.document.close(); // to finish loading the page
   };
 
