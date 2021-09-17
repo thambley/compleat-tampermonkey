@@ -19,3 +19,10 @@ Add button to Compleat to download a log as a text file.
 View Compleat log with additional formatting.
 
 [link](https://github.com/thambley/compleat-tampermonkey/raw/main/View%20Log.user.js)
+
+## Prep
+
+To prepare View Log
+
+1. run `node btoa.js log-to-html.html`
+2. copy contents of b64.txt into View Log.user.js on line 20 `var htmlContent = 'b64txtcontent'`
