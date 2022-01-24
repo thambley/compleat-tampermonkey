@@ -14,7 +14,6 @@
     'use strict';
 
     var locator = '';
-    var results = [];
     var logs = [];
     var selectedLogs = [];
     var currentHref = document.location.href;
@@ -27,7 +26,6 @@
             console.log('locator: ' + locator);
         }
         if (json.results != null) {
-            results = json.results;
             console.log('results count: ' + json.results.length);
         }
         if (json.body != null) {
