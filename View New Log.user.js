@@ -189,7 +189,7 @@
               /* Changed ! your code here */
               console.log(`currentHref: ${currentHref}`);
               populateSelectedLogs(currentHref);
-              updateDownloadButton();
+              updateTableViewButton();
           }
       });
   });
