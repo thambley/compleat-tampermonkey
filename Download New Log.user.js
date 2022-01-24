@@ -1,6 +1,7 @@
 // ==UserScript==
 // @name         Download New Log
 // @namespace    https://support.concurcompleat.com/Logs
+// @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
 // @version      0.1
 // @description  Download selected logs
 // @author       thambley@tlcorporate.com

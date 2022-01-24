@@ -2,13 +2,19 @@
 
 Tampermonkey scripts for Compleat logs
 
+## Download Log
+
+Add button to Compleat to download a log as a text file.
+
+[link](https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js)
+
 ## Add Process Name to Log
 
 Adds process/workflow name to Compleat log page.
 
 [link](https://github.com/thambley/compleat-tampermonkey/raw/main/Add%20Process%20Name%20to%20Log.user.js)
 
-## Download Log
+## Download Log (OLD)
 
 Add button to Compleat to download a log as a text file.
 
