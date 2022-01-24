@@ -2,7 +2,7 @@
 // @name         Download New Log
 // @namespace    https://support.concurcompleat.com/Logs
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
-// @version      0.1
+// @version      0.2
 // @description  Download selected logs
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -169,7 +169,7 @@
 
     // replace the fetch event to allow the script to get log information
     unsafeWindow.fetch = function(resource, init) {
-        console.log('requeste resource: ' + resource);
+        console.log('request resource: ' + resource);
         console.log(init);
         // init.headers.contentType = "application/json; charset=utf-8";
         return old_fetch(resource, init).then(responseHandler);
