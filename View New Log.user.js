@@ -2,7 +2,7 @@
 // @name         View New Log
 // @namespace    https://support.concurcompleat.com/Logs/
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/View%20New%20Log.user.js
-// @version      0.1
+// @version      0.3
 // @description  View formatted log text
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
