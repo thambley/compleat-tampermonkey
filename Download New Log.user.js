@@ -194,5 +194,4 @@
     };
 
     observer.observe(bodyList, config);
-
 })();

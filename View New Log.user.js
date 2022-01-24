@@ -200,28 +200,4 @@
   };
 
   observer.observe(bodyList, config);
-
-
-
-  var content = editor.getValue();
-
-
-
-  var button = document.createElement("button");
-  button.classList.add("btn");
-  button.classList.add("btn-sm");
-  button.classList.add("btn-outline-primary");
-  button.style.margin = '5px';
-  button.innerText = "View as Table";
-
-  button.onclick = function () {
-    // https://stackoverflow.com/questions/11965087/open-a-new-tab-window-and-write-something-to-it#11967627
-    // https://stackoverflow.com/a/38866224 - addresses special handling of $$
-    var tab = window.open('about:blank', '_blank');
-    tab.document.write(atob(htmlContent).replace('%FILENAME%', filename).split('%LOGTEXT%').join(content.replace(/`/g, '\\`'))); // where 'html' is a variable containing your HTML
-    tab.document.close(); // to finish loading the page
-  };
-
-  span.appendChild(button);
-  rightColumn.appendChild(span);
 })();
