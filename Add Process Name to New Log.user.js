@@ -2,7 +2,7 @@
 // @name         Add Process Name To New Log
 // @namespace    https://support.concurcompleat.com/Logs
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
-// @version      0.1
+// @version      0.2
 // @description  Add Process Name To Selected Log Snippets
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -73,7 +73,7 @@
       currentNode = currentNode.parentNode;
     }
     if (currentNode != null) {
-      var processNameNode = currentNode.getElementById(processNameId);
+      var processNameNode = document.getElementById(processNameId);
       if (processNameNode == null) {
         processNameNode = document.createElement("span");
         processNameNode.id = processNameId;
