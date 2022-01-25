@@ -2,7 +2,7 @@
 // @name         Add Process Name To New Log
 // @namespace    https://support.concurcompleat.com/Logs
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
-// @version      0.2
+// @version      0.3
 // @description  Add Process Name To Selected Log Snippets
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -78,10 +78,9 @@
         processNameNode = document.createElement("span");
         processNameNode.id = processNameId;
         processNameNode.classList.add("MuiTypography-root");
-        processNameNode.classList.add("MuiFormControlLabel-label");
-        processNameNode.classList.add("MuiTypography-body1");
+        processNameNode.classList.add("MuiTypography-subtitle2");
 
-        currentNode.appendChild(processNameNode);
+        currentNode.children[currentNode.children.length - 1].appendChild(processNameNode);
       }
       processNameNode.innerText = processName;
     }
