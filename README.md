@@ -12,7 +12,7 @@ Add button to Compleat to download a log as a text file.
 
 Adds process/workflow name to Compleat log page.
 
-[link](https://github.com/thambley/compleat-tampermonkey/raw/main/Add%20Process%20Name%20to%20Log.user.js)
+[link](https://github.com/thambley/compleat-tampermonkey/raw/main/Add%20Process%20Name%20to%20New%20Log.user.js)
 
 ## View Log
 
