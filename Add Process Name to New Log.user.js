@@ -18,7 +18,7 @@
   var selectedLogs = [];
 
   function jsonHandler(json) {
-    if (json.options != null) {
+    if (json.results != null) {
       logs = [];
       resetLabels();
     }
