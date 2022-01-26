@@ -2,7 +2,7 @@
 // @name         Add Process Name To New Log
 // @namespace    https://support.concurcompleat.com/Logs
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
-// @version      0.3
+// @version      0.4
 // @description  Add Process Name To Selected Log Snippets
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -10,58 +10,77 @@
 // @grant        unsafeWindow
 // ==/UserScript==
 
-(function() {
+(function () {
   'use strict';
 
+  var labelIds = [];
   var logs = [];
   var selectedLogs = [];
-  var currentHref = document.location.href;
-  var old_fetch = unsafeWindow.fetch;
 
   function jsonHandler(json) {
-      if (json.body != null) {
-          console.log(json.id);
-          const found = logs.find(log => log.id == json.id);
-          if (found == null) {
-              logs.push(json);
-              console.log('logs count: ' + logs.length);
-              populateSelectedLogs(currentHref);
-              updateProcessNames();
-          }
+    if (json.options != null) {
+      logs = [];
+      resetLabels();
+    }
+    if (json.body != null) {
+      console.log(json.id);
+      const found = logs.find(log => log.id == json.id);
+      if (found == null) {
+        logs.push(json);
+        console.log('logs count: ' + logs.length);
+        populateSelectedLogs(currentHref);
+        updateProcessNames();
       }
+    }
   }
 
   function populateSelectedLogs(href) {
-      var queryParts = href.split('?');
-      selectedLogs = [];
-      if (queryParts.length > 1) {
-          var query = queryParts[1].split('&');
-          var parameters = { id: '', sid: [] };
-          for (var i = 0; i < query.length; i++) {
-              var parameterParts = query[i].split('=');
-              if (parameterParts[0] == 'id') {
-                  parameters.id = parameterParts[1];
-              } else if (parameterParts[0] == 'sid') {
-                  var sid = parameterParts[1];
-                  parameters.sid.push(sid);
-                  const found = logs.find(log => log.id == sid);
-                  if (found != null) {
-                      selectedLogs.push(found);
-                  }
-              }
+    var queryParts = href.split('?');
+    selectedLogs = [];
+    if (queryParts.length > 1) {
+      var query = queryParts[1].split('&');
+      var parameters = { id: '', sid: [] };
+      for (var i = 0; i < query.length; i++) {
+        var parameterParts = query[i].split('=');
+        if (parameterParts[0] == 'id') {
+          parameters.id = parameterParts[1];
+        } else if (parameterParts[0] == 'sid') {
+          var sid = parameterParts[1];
+          parameters.sid.push(sid);
+          const found = logs.find(log => log.id == sid);
+          if (found != null) {
+            selectedLogs.push(found);
           }
+        }
       }
-      console.log('selected log count: ' + selectedLogs.length);
+    }
+    console.log('selected log count: ' + selectedLogs.length);
   }
 
 
   function getWorkflowName(content) {
-      var processRegex = new RegExp('(Workflow:|Name:) "([^"]+)"', 'g');
-      var processMatches = [...content.matchAll(processRegex)];
-      var processMatch = processMatches.find((element) => { return (element[2] !== 'Determine PNR Type' && element[2] !== 'Determine PNR Type - IC Offline (ALTOUR)' && element[2] !== 'Determine PNR Type - IC Online (ALTOUR)') });
-      var process = processMatch ? processMatch[2] : 'Unknown';
+    var processRegex = new RegExp('(Workflow:|Name:) "([^"]+)"', 'g');
+    var processMatches = [...content.matchAll(processRegex)];
+    var processMatch = processMatches.find((element) => { return (element[2] !== 'Determine PNR Type' && element[2] !== 'Determine PNR Type - IC Offline (ALTOUR)' && element[2] !== 'Determine PNR Type - IC Online (ALTOUR)') });
+    var process = processMatch ? processMatch[2] : 'Unknown';
 
-      return process;
+    return process;
+  }
+
+  function resetLabels() {
+    for (var i = 0; i < labelIds.length; i++)
+    {
+      var processNameNode = document.getElementById(labelIds[i]);
+      if (processNameNode != null) {
+        processNameNode.innerText = '';
+      }
+    }
+  }
+
+  function addLabelId(labelId) {
+    if (!labelIds.includes(labelId)) {
+      labelIds.push(labelId);
+    }
   }
 
   function updateProcessName(checkbox, processName) {
@@ -81,6 +100,7 @@
         processNameNode.classList.add("MuiTypography-subtitle2");
 
         currentNode.children[currentNode.children.length - 1].appendChild(processNameNode);
+        addLabelId(processNameId);
       }
       processNameNode.innerText = processName;
     }
@@ -91,8 +111,7 @@
     var checkBoxes = Array.from(document.querySelectorAll("input[type=checkbox]"));
     var checkedSnippets = checkBoxes.filter(box => box.name.startsWith("checkSnippet") && box.checked);
     if (workflowNames.length == checkedSnippets.length) {
-      for (var i = 0; i < workflowNames.length; i++)
-      {
+      for (var i = 0; i < workflowNames.length; i++) {
         updateProcessName(checkedSnippets[i], workflowNames[i]);
       }
     } else {
@@ -102,38 +121,40 @@
 
   // clone the response to be handled by the original handler
   function responseHandler(response) {
-      // console.log(response.body);
-      var clonedResponse = response.clone();
-      response.json().then(jsonHandler);
-      return clonedResponse;
+    // console.log(response.body);
+    var clonedResponse = response.clone();
+    response.json().then(jsonHandler);
+    return clonedResponse;
   }
 
   // replace the fetch event to allow the script to get log information
-  unsafeWindow.fetch = function(resource, init) {
-      console.log('request resource: ' + resource);
-      console.log(init);
-      // init.headers.contentType = "application/json; charset=utf-8";
-      return old_fetch(resource, init).then(responseHandler);
+  var old_fetch = unsafeWindow.fetch;
+  unsafeWindow.fetch = function (resource, init) {
+    console.log('request resource: ' + resource);
+    console.log(init);
+    // init.headers.contentType = "application/json; charset=utf-8";
+    return old_fetch(resource, init).then(responseHandler);
   }
 
   // https://stackoverflow.com/questions/3522090/event-when-window-location-href-changes
+  var currentHref = document.location.href;
   var bodyList = document.querySelector("body")
 
-  var observer = new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
-          if (currentHref != document.location.href) {
-              currentHref = document.location.href;
-              /* Changed ! your code here */
-              console.log(`currentHref: ${currentHref}`);
-              populateSelectedLogs(currentHref);
-              updateProcessNames();
-          }
-      });
+  var observer = new MutationObserver(function (mutations) {
+    mutations.forEach(function (mutation) {
+      if (currentHref != document.location.href) {
+        currentHref = document.location.href;
+        /* Changed ! your code here */
+        console.log(`currentHref: ${currentHref}`);
+        populateSelectedLogs(currentHref);
+        updateProcessNames();
+      }
+    });
   });
 
   var config = {
-      childList: true,
-      subtree: true
+    childList: true,
+    subtree: true
   };
 
   observer.observe(bodyList, config);
