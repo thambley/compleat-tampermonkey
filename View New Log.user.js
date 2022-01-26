@@ -22,14 +22,14 @@
 
   function jsonHandler(json) {
     if (json.body != null) {
-        console.log('json id: ' + json.id);
-        const found = logs.find(log => log.id == json.id);
-        if (found == null) {
-            logs.push(json);
-            console.log('logs count: ' + logs.length);
-            populateSelectedLogs(currentHref);
-            updateTableViewButton();
-        }
+      console.log('json id: ' + json.id);
+      const found = logs.find(log => log.id == json.id);
+      if (found == null) {
+        logs.push(json);
+        console.log('logs count: ' + logs.length);
+        populateSelectedLogs(currentHref);
+        updateTableViewButton();
+      }
     }
   }
 
@@ -37,30 +37,30 @@
     var queryParts = href.split('?');
     selectedLogs = [];
     if (queryParts.length > 1) {
-        var query = queryParts[1].split('&');
-        var parameters = { id: '', sid: [] };
-        for (var i = 0; i < query.length; i++) {
-            var parameterParts = query[i].split('=');
-            if (parameterParts[0] == 'id') {
-                parameters.id = parameterParts[1];
-            } else if (parameterParts[0] == 'sid') {
-                var sid = parameterParts[1];
-                parameters.sid.push(sid);
-                const found = logs.find(log => log.id == sid);
-                if (found != null) {
-                    selectedLogs.push(found);
-                }
-            }
+      var query = queryParts[1].split('&');
+      var parameters = { id: '', sid: [] };
+      for (var i = 0; i < query.length; i++) {
+        var parameterParts = query[i].split('=');
+        if (parameterParts[0] == 'id') {
+          parameters.id = parameterParts[1];
+        } else if (parameterParts[0] == 'sid') {
+          var sid = parameterParts[1];
+          parameters.sid.push(sid);
+          const found = logs.find(log => log.id == sid);
+          if (found != null) {
+            selectedLogs.push(found);
+          }
         }
+      }
     }
     console.log('selected log count: ' + selectedLogs.length);
   }
 
   function getContent() {
     if (selectedLogs.length == 0) {
-        return null;
+      return null;
     } else {
-        return selectedLogs.map(log => log.body).join('\r\n');
+      return selectedLogs.map(log => log.body).join('\r\n');
     }
   }
 
@@ -96,11 +96,11 @@
 
   function getFilename(content) {
     if (content == null) {
-        console.log('filename: null');
-        return null;
+      console.log('filename: null');
+      return null;
     } else {
-        var filenameParts = [getRecordLocator(), getAgencyName().replace(' ', ''), getGds(content), getFileDate(content), getWorkflowName(content)];
-        return(filenameParts.join('-') + '.log');
+      var filenameParts = [getRecordLocator(), getAgencyName().replace(' ', ''), getGds(content), getFileDate(content), getWorkflowName(content)];
+      return (filenameParts.join('-') + '.log');
     }
   }
 
@@ -111,80 +111,80 @@
     var tableViewButton = document.getElementById('TableViewButton');
 
     if (tableViewButton == null) {
-        const allSnippetsParent = allSnippetsButton.parentNode;
-        const buttonContainer = allSnippetsParent.parentNode;
+      const allSnippetsParent = allSnippetsButton.parentNode;
+      const buttonContainer = allSnippetsParent.parentNode;
 
-        const tableViewDiv = document.createElement("div");
-        tableViewDiv.classList.add("MuiGrid-root");
-        tableViewDiv.classList.add("MuiGrid-item");
+      const tableViewDiv = document.createElement("div");
+      tableViewDiv.classList.add("MuiGrid-root");
+      tableViewDiv.classList.add("MuiGrid-item");
 
-        tableViewButton = document.createElement("button");
-        tableViewButton.id = "TableViewButton";
-        tableViewButton.classList.add("MuiButtonBase-root");
-        tableViewButton.classList.add("MuiButton-root");
-        tableViewButton.classList.add("MuiButton-contained");
-        tableViewButton.classList.add("MuiButton-containedSizeSmall");
-        tableViewButton.classList.add("MuiButton-sizeSmall");
-        tableViewDiv.appendChild(tableViewButton);
+      tableViewButton = document.createElement("button");
+      tableViewButton.id = "TableViewButton";
+      tableViewButton.classList.add("MuiButtonBase-root");
+      tableViewButton.classList.add("MuiButton-root");
+      tableViewButton.classList.add("MuiButton-contained");
+      tableViewButton.classList.add("MuiButton-containedSizeSmall");
+      tableViewButton.classList.add("MuiButton-sizeSmall");
+      tableViewDiv.appendChild(tableViewButton);
 
-        var spanDownload = document.createElement("span");
-        tableViewButton.classList.add("MuiButton-label");
-        spanDownload.innerText = "View as Table";
-        tableViewButton.appendChild(spanDownload);
+      var spanDownload = document.createElement("span");
+      tableViewButton.classList.add("MuiButton-label");
+      spanDownload.innerText = "View as Table";
+      tableViewButton.appendChild(spanDownload);
 
-        buttonContainer.appendChild(tableViewDiv);
+      buttonContainer.appendChild(tableViewDiv);
     }
 
     var content = getContent();
     if (content != null) {
-        if (tableViewButton.classList.contains('Mui-disabled')) {
-            tableViewButton.classList.remove('Mui-disabled');
-        }
-        tableViewButton.onclick = function () {
-          // https://stackoverflow.com/questions/11965087/open-a-new-tab-window-and-write-something-to-it#11967627
-          // https://stackoverflow.com/a/38866224 - addresses special handling of $$
-          var tab = window.open('about:blank', '_blank');
-          tab.document.write(atob(htmlContent).replace('%FILENAME%', getFilename(content)).split('%LOGTEXT%').join(content.replace(/`/g, '\\`'))); // where 'html' is a variable containing your HTML
-          tab.document.close(); // to finish loading the page
-        };
+      if (tableViewButton.classList.contains('Mui-disabled')) {
+        tableViewButton.classList.remove('Mui-disabled');
+      }
+      tableViewButton.onclick = function () {
+        // https://stackoverflow.com/questions/11965087/open-a-new-tab-window-and-write-something-to-it#11967627
+        // https://stackoverflow.com/a/38866224 - addresses special handling of $$
+        var tab = window.open('about:blank', '_blank');
+        tab.document.write(atob(htmlContent).replace('%FILENAME%', getFilename(content)).split('%LOGTEXT%').join(content.replace(/`/g, '\\`'))); // where 'html' is a variable containing your HTML
+        tab.document.close(); // to finish loading the page
+      };
     } else {
-        if (!tableViewButton.classList.contains('Mui-disabled')) {
-            tableViewButton.classList.add('Mui-disabled');
-        }
+      if (!tableViewButton.classList.contains('Mui-disabled')) {
+        tableViewButton.classList.add('Mui-disabled');
+      }
     }
   }
 
   // clone the response to be handled by the original handler
   function responseHandler(response) {
-      var clonedResponse = response.clone();
-      response.json().then(jsonHandler);
-      return clonedResponse;
+    var clonedResponse = response.clone();
+    response.json().then(jsonHandler);
+    return clonedResponse;
   }
 
   // replace the fetch event to allow the script to get log information
-  unsafeWindow.fetch = function(resource, init) {
-      console.log('request resource: ' + resource);
-      return old_fetch(resource, init).then(responseHandler);
+  unsafeWindow.fetch = function (resource, init) {
+    console.log('request resource: ' + resource);
+    return old_fetch(resource, init).then(responseHandler);
   }
 
   // https://stackoverflow.com/questions/3522090/event-when-window-location-href-changes
   var bodyList = document.querySelector("body")
 
-  var observer = new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
-          if (currentHref != document.location.href) {
-              currentHref = document.location.href;
-              /* Changed ! your code here */
-              console.log(`currentHref: ${currentHref}`);
-              populateSelectedLogs(currentHref);
-              updateTableViewButton();
-          }
-      });
+  var observer = new MutationObserver(function (mutations) {
+    mutations.forEach(function (mutation) {
+      if (currentHref != document.location.href) {
+        currentHref = document.location.href;
+        /* Changed ! your code here */
+        console.log(`currentHref: ${currentHref}`);
+        populateSelectedLogs(currentHref);
+        updateTableViewButton();
+      }
+    });
   });
 
   var config = {
-      childList: true,
-      subtree: true
+    childList: true,
+    subtree: true
   };
 
   observer.observe(bodyList, config);
