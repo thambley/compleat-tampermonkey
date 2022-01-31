@@ -2,7 +2,7 @@
 // @name         Download New Log
 // @namespace    https://support.concurcompleat.com/Logs
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
-// @version      0.2
+// @version      0.3
 // @description  Download selected logs
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -113,13 +113,13 @@
 
   function updateDownloadButton() {
     const buttons = Array.from(document.querySelectorAll('button'));
-    const allSnippetsButton = buttons.find(el => el.textContent === 'All Snippets');
+    const snippetsButton = buttons.find(el => el.textContent === 'All Snippets' || el.textContent === 'First 15 Snippets');
 
     var downloadButton = document.getElementById('DownloadButton');
 
     if (downloadButton == null) {
-      const allSnippetsParent = allSnippetsButton.parentNode;
-      const buttonContainer = allSnippetsParent.parentNode;
+      const snippetsParent = snippetsButton.parentNode;
+      const buttonContainer = snippetsParent.parentNode;
 
       const downloadDiv = document.createElement("div");
       downloadDiv.classList.add("MuiGrid-root");

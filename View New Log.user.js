@@ -2,7 +2,7 @@
 // @name         View New Log
 // @namespace    https://support.concurcompleat.com/Logs/
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/View%20New%20Log.user.js
-// @version      0.4
+// @version      0.5
 // @description  View formatted log text
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -106,13 +106,13 @@
 
   function updateTableViewButton() {
     const buttons = Array.from(document.querySelectorAll('button'));
-    const allSnippetsButton = buttons.find(el => el.textContent === 'All Snippets');
+    const snippetsButton = buttons.find(el => el.textContent === 'All Snippets' || el.textContent === 'First 15 Snippets');
 
     var tableViewButton = document.getElementById('TableViewButton');
 
     if (tableViewButton == null) {
-      const allSnippetsParent = allSnippetsButton.parentNode;
-      const buttonContainer = allSnippetsParent.parentNode;
+      const snippetsParent = snippetsButton.parentNode;
+      const buttonContainer = snippetsParent.parentNode;
 
       const tableViewDiv = document.createElement("div");
       tableViewDiv.classList.add("MuiGrid-root");
