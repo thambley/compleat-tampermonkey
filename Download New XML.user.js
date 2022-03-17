@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js
-// @version      0.4
+// @version      0.5
 // @description  Download selected xml
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -75,6 +75,9 @@
   }
 
   function getXml(content) {
+    if (content == null) {
+      return null;
+    }
     const startIndex = content.indexOf('<pnr xmlns="http://gdsx.com/agencyDefault/PnrDataPush.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">');
     if (startIndex > 0) {
       const endIndex = content.indexOf('</pnr>', startIndex);
