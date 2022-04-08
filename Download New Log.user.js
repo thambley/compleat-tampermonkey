@@ -1,8 +1,9 @@
 // ==UserScript==
 // @name         Download New Log
 // @namespace    https://support.concurcompleat.com/Logs
+// @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
-// @version      0.3
+// @version      0.4
 // @description  Download selected logs
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -19,6 +20,10 @@
   var currentHref = document.location.href;
   var old_fetch = unsafeWindow.fetch;
 
+  function findLogById(logId) {
+    return logs.find(log => log.id == logId);
+  }
+
   function jsonHandler(json) {
     console.log(json);
     if (json.options != null) {
@@ -30,7 +35,7 @@
     }
     if (json.body != null) {
       console.log(json.id);
-      const found = logs.find(log => log.id == json.id);
+      const found = findLogById(json.id);
       if (found == null) {
         logs.push(json);
         console.log('logs count: ' + logs.length);
@@ -53,7 +58,7 @@
         } else if (parameterParts[0] == 'sid') {
           var sid = parameterParts[1];
           parameters.sid.push(sid);
-          const found = logs.find(log => log.id == sid);
+          const found = findLogById(sid);
           if (found != null) {
             selectedLogs.push(found);
           }
