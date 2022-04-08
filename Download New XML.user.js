@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js
-// @version      0.5
+// @version      0.6
 // @description  Download selected xml
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -20,13 +20,17 @@
   var currentHref = document.location.href;
   var old_fetch = unsafeWindow.fetch;
 
+  function findLogById(logId) {
+    return logs.find(log => log.id == logId);
+  }
+
   function jsonHandler(json) {
     if (json.options != null) {
       locator = json.options.recordLocator;
     }
     if (json.body != null) {
       console.log(json.id);
-      const found = logs.find(log => log.id == json.id);
+      const found = findLogById(json.id);
       if (found == null) {
         logs.push(json);
         populateSelectedLogs(currentHref);
@@ -48,7 +52,7 @@
         } else if (parameterParts[0] == 'sid') {
           var sid = parameterParts[1];
           parameters.sid.push(sid);
-          const found = logs.find(log => log.id == sid);
+          const found = findLogById(sid);
           if (found != null) {
             selectedLogs.push(found);
           }
