@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Add%20Process%20Name%20to%20New%20Log.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Add%20Process%20Name%20to%20New%20Log.user.js
-// @version      0.4
+// @version      0.5
 // @description  Add Process Name To Selected Log Snippets
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -18,6 +18,10 @@
   var logs = [];
   var selectedLogs = [];
 
+  function findLogById(logId) {
+    return logs.find(log => log.id == logId);
+  }
+
   function jsonHandler(json) {
     if (json.results != null) {
       logs = [];
@@ -25,7 +29,7 @@
     }
     if (json.body != null) {
       console.log(json.id);
-      const found = logs.find(log => log.id == json.id);
+      const found = findLogById(json.id);
       if (found == null) {
         logs.push(json);
         console.log('logs count: ' + logs.length);
@@ -48,7 +52,7 @@
         } else if (parameterParts[0] == 'sid') {
           var sid = parameterParts[1];
           parameters.sid.push(sid);
-          const found = logs.find(log => log.id == sid);
+          const found = findLogById(sid);
           if (found != null) {
             selectedLogs.push(found);
           }
