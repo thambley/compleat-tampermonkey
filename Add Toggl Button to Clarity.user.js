@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/task/
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Add%20Toggl%20Button%20to%20Clarity.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Add%20Toggl%20Button%20to%20Clarity.user.js
-// @version      0.3
+// @version      0.4
 // @description  Toggle button for Clarity
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/task/*
@@ -918,6 +918,14 @@ text-decoration: underline;
     }
 
     // CUSTOM STUFF HERE
+    function inIframe () {
+        try {
+            return window.self !== window.top;
+        } catch (e) {
+            return true;
+        }
+    }
+
     function getCookie(name) {
         var value = '';
         var searchText = name + '=';
@@ -962,15 +970,18 @@ text-decoration: underline;
         response.json().then(jsonHandler);
     }
 
-    var buttonInitialized = false;
+    if (!inIframe())
+    {
+        var buttonInitialized = false;
 
-    var myInit = {
-        method: 'GET',
-        headers: getHeaders(),
-    };
+        var myInit = {
+            method: 'GET',
+            headers: getHeaders(),
+        };
 
-    var taskId = document.location.pathname.split('/').pop();
+        var taskId = document.location.pathname.split('/').pop();
 
-    unsafeWindow.fetch("https://clarityapi.concurcompleat.com/api/v1/tasks/" + taskId, myInit).then(responseHandler);
+        unsafeWindow.fetch("https://clarityapi.concurcompleat.com/api/v1/tasks/" + taskId, myInit).then(responseHandler);
+    }
 
 })();
