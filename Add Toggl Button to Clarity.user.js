@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/task/
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Add%20Toggl%20Button%20to%20Clarity.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Add%20Toggl%20Button%20to%20Clarity.user.js
-// @version      0.4
+// @version      0.5
 // @description  Toggle button for Clarity
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/task/*
@@ -957,7 +957,7 @@ text-decoration: underline;
             new TogglButtonGM('body', function () {
                 return {
                     className: 'clarity',
-                    description: json.title + ' #' + json.id,
+                    description: json.title + ' CT#' + json.id,
                     projectIds: [],
                     tags: []
                 };
