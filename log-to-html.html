@@ -13950,6 +13950,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
 
         var logEntryRegEx = /^(?:[\[]W#([0-9]+) [\(]([0-9]+)[\)] [A-Z\d]*?WRK([0-9]+)[\]] -- )?(?:[\{]([^\}]+)[\}] -- )?(?:[\<]([A-Za-z]+)[\>] -- )(?:([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{2}) ([0-9]{1,2}):([0-9]{2}):([0-9]{2}).([0-9]{3}) -- )(.+)/;
         var logSeparatorRegEx = /^[\-]{20}([\d]+)\/([\d]+)\/([\d]+) ([\d]+):([\d]+):([\d]+) ([AP]M) [\(]UTC[\)][\-]{20}/;
+        var routineNameRegEx = /Routine ([A-Za-z_]+)/;
         var nameRegEx = /"([^"]+)"/;
         for (var lineNumber = 0; lineNumber < logLines.length; lineNumber++) {
           if (logEntryRegEx.test(logLines[lineNumber])) {
@@ -14001,7 +14002,10 @@ var resetTo = exports.resetTo = function resetTo(state) {
                   // clear
                   currentLogEntry.routine = currentRoutine = '';
                 } else {
-                  if (nameRegEx.test(currentLogEntry.text)) {
+                  if (routineNameRegEx.test(currentLogEntry.text)) {
+                    var nameMatch = routineNameRegEx.exec(currentLogEntry.text);
+                    currentLogEntry.routine = currentRoutine = nameMatch[1];
+                  } else if (nameRegEx.test(currentLogEntry.text)) {
                     var nameMatch = nameRegEx.exec(currentLogEntry.text);
                     currentLogEntry.routine = currentRoutine = nameMatch[1];
                   } else {
