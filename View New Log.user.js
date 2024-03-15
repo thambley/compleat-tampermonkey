@@ -75,7 +75,12 @@
   }
 
   function getGds(content) {
-    return content.includes('<PNRBFManagement') ? 'Apollo' : content.includes('DIR0DPN') ? 'Worldspan' : content.includes('SD000766') ? 'Sabre' : content.includes('http://xml.amadeus.com/') ? 'Amadeus' : 'Unknown';
+    return content.includes('<PNRBFManagement') && content.includes('<OwningCRS>1G</OwningCRS>') ? 'Galileo' :
+           content.includes('<PNRBFManagement') && content.includes('<OwningCRS>1V</OwningCRS>') ? 'Apollo' :
+           content.includes('DIR0DPN') ? 'Worldspan' :
+           content.includes('SD000766') ? 'Sabre' :
+           content.includes('http://xml.amadeus.com/') ? 'Amadeus' :
+           'Unknown';
   }
 
   function getFileDate(content) {

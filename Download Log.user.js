@@ -2,7 +2,7 @@
 // @name         Download Log
 // @namespace    https://support.concurcompleat.com/Logs/Snippet/
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20Log.user.js
-// @version      0.7
+// @version      0.8
 // @description  Download log text as a text file
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs/Snippet*
@@ -21,7 +21,12 @@
   var logInfoRow = logInfo.querySelector('.row');
   var logValues = Array.from(logInfoRow.querySelectorAll('.log-value')).map(x => x.innerText.replace(' ', '') || x.textContent.replace(' ', ''));
   var content = editor.getValue();
-  var gds = content.includes('<PNRBFManagement') ? 'Apollo' : content.includes('DIR0DPN') ? 'Worldspan' : content.includes('SD000766') ? 'Sabre' : content.includes('http://xml.amadeus.com/') ? 'Amadeus' : 'Unknown';
+  var gds = content.includes('<PNRBFManagement') && content.includes('<OwningCRS>1G</OwningCRS>') ? 'Galileo' :
+            content.includes('<PNRBFManagement') && content.includes('<OwningCRS>1V</OwningCRS>') ? 'Apollo' :
+            content.includes('DIR0DPN') ? 'Worldspan' :
+            content.includes('SD000766') ? 'Sabre' :
+            content.includes('http://xml.amadeus.com/') ? 'Amadeus' :
+            'Unknown';
   logValues.push(gds);
   // 4/25/19 13:09:43.199
   var logDateMatches = content.match(new RegExp('([\\d]+)/([\\d]+)/([\\d]+) ([\\d]+):([\\d]+):([\\d]+)\\.([\\d]+)'));
