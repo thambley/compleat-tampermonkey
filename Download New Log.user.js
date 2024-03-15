@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
-// @version      0.4
+// @version      0.5
 // @description  Download selected logs
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -87,7 +87,12 @@
   }
 
   function getGds(content) {
-    return content.includes('<PNRBFManagement') ? 'Apollo' : content.includes('DIR0DPN') ? 'Worldspan' : content.includes('SD000766') ? 'Sabre' : content.includes('http://xml.amadeus.com/') ? 'Amadeus' : 'Unknown';
+    return content.includes('<PNRBFManagement') && content.includes('<OwningCRS>1G</OwningCRS>') ? 'Galileo' :
+           content.includes('<PNRBFManagement') && content.includes('<OwningCRS>1V</OwningCRS>') ? 'Apollo' :
+           content.includes('DIR0DPN') ? 'Worldspan' :
+           content.includes('SD000766') ? 'Sabre' :
+           content.includes('http://xml.amadeus.com/') ? 'Amadeus' :
+           'Unknown';
   }
 
   function getFileDate(content) {
