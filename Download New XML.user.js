@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js
-// @version      0.6
+// @version      0.7
 // @description  Download selected xml
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -18,7 +18,6 @@
   var logs = [];
   var selectedLogs = [];
   var currentHref = document.location.href;
-  var old_fetch = unsafeWindow.fetch;
 
   function findLogById(logId) {
     return logs.find(log => log.id == logId);
@@ -136,45 +135,47 @@
     const buttons = Array.from(document.querySelectorAll('button'));
     const snippetsButton = buttons.find(el => el.textContent === 'All Snippets' || el.textContent === 'First 15 Snippets');
 
-    var downloadXmlButton = document.getElementById('DownloadXmlButton');
+    if (snippetsButton != null) {
+      var downloadXmlButton = document.getElementById('DownloadXmlButton');
 
-    if (downloadXmlButton == null) {
-      const snippetsParent = snippetsButton.parentNode;
-      const buttonContainer = snippetsParent.parentNode;
+      if (downloadXmlButton == null) {
+        const snippetsParent = snippetsButton.parentNode;
+        const buttonContainer = snippetsParent.parentNode;
 
-      const downloadDiv = document.createElement("div");
-      downloadDiv.classList.add("MuiGrid-root");
-      downloadDiv.classList.add("MuiGrid-item");
+        const downloadDiv = document.createElement("div");
+        downloadDiv.classList.add("MuiGrid-root");
+        downloadDiv.classList.add("MuiGrid-item");
 
-      downloadXmlButton = document.createElement("a");
-      downloadXmlButton.id = "DownloadXmlButton";
-      downloadXmlButton.classList.add("MuiButtonBase-root");
-      downloadXmlButton.classList.add("MuiButton-root");
-      downloadXmlButton.classList.add("MuiButton-contained");
-      downloadXmlButton.classList.add("MuiButton-containedSizeSmall");
-      downloadXmlButton.classList.add("MuiButton-sizeSmall");
-      downloadDiv.appendChild(downloadXmlButton);
+        downloadXmlButton = document.createElement("a");
+        downloadXmlButton.id = "DownloadXmlButton";
+        downloadXmlButton.classList.add("MuiButtonBase-root");
+        downloadXmlButton.classList.add("MuiButton-root");
+        downloadXmlButton.classList.add("MuiButton-contained");
+        downloadXmlButton.classList.add("MuiButton-containedSizeSmall");
+        downloadXmlButton.classList.add("MuiButton-sizeSmall");
+        downloadDiv.appendChild(downloadXmlButton);
 
-      var spanDownload = document.createElement("span");
-      downloadXmlButton.classList.add("MuiButton-label");
-      spanDownload.innerText = "XML";
-      downloadXmlButton.appendChild(spanDownload);
+        var spanDownload = document.createElement("span");
+        downloadXmlButton.classList.add("MuiButton-label");
+        spanDownload.innerText = "XML";
+        downloadXmlButton.appendChild(spanDownload);
 
-      buttonContainer.appendChild(downloadDiv);
-    }
-
-    var content = getContent();
-    var xml = getXml(content);
-    if (xml != null) {
-      if (downloadXmlButton.classList.contains('Mui-disabled')) {
-        downloadXmlButton.classList.remove('Mui-disabled');
+        buttonContainer.appendChild(downloadDiv);
       }
-      var file = new Blob([xml], { type: 'text/plain' });
-      downloadXmlButton.href = URL.createObjectURL(file);
-      downloadXmlButton.download = getFilename(content); //file name
-    } else {
-      if (!downloadXmlButton.classList.contains('Mui-disabled')) {
-        downloadXmlButton.classList.add('Mui-disabled');
+
+      var content = getContent();
+      var xml = getXml(content);
+      if (xml != null) {
+        if (downloadXmlButton.classList.contains('Mui-disabled')) {
+          downloadXmlButton.classList.remove('Mui-disabled');
+        }
+        var file = new Blob([xml], { type: 'text/plain' });
+        downloadXmlButton.href = URL.createObjectURL(file);
+        downloadXmlButton.download = getFilename(content); //file name
+      } else {
+        if (!downloadXmlButton.classList.contains('Mui-disabled')) {
+          downloadXmlButton.classList.add('Mui-disabled');
+        }
       }
     }
   }
@@ -186,28 +187,31 @@
     return clonedResponse;
   }
 
-  // replace the fetch event to allow the script to get log information
-  unsafeWindow.fetch = function (resource, init) {
-    return old_fetch(resource, init).then(responseHandler);
-  }
+  if (currentdocument.location.hash != '#infoview') {
+    // replace the fetch event to allow the script to get log information
+    var old_fetch = unsafeWindow.fetch;
+    unsafeWindow.fetch = function (resource, init) {
+      return old_fetch(resource, init).then(responseHandler);
+    }
 
-  // https://stackoverflow.com/questions/3522090/event-when-window-location-href-changes
-  var bodyList = document.querySelector("body")
+    // https://stackoverflow.com/questions/3522090/event-when-window-location-href-changes
+    var bodyList = document.querySelector("body")
 
-  var observer = new MutationObserver(function (mutations) {
-    mutations.forEach(function (mutation) {
-      if (currentHref != document.location.href) {
-        currentHref = document.location.href;
-        populateSelectedLogs(currentHref);
-        updateDownloadXmlButton();
-      }
+    var observer = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
+        if (currentHref != document.location.href) {
+          currentHref = document.location.href;
+          populateSelectedLogs(currentHref);
+          updateDownloadXmlButton();
+        }
+      });
     });
-  });
 
-  var config = {
-    childList: true,
-    subtree: true
-  };
+    var config = {
+      childList: true,
+      subtree: true
+    };
 
-  observer.observe(bodyList, config);
+    observer.observe(bodyList, config);
+  }
 })();

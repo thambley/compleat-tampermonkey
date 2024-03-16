@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Add%20Process%20Name%20to%20New%20Log.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Add%20Process%20Name%20to%20New%20Log.user.js
-// @version      0.6
+// @version      0.7
 // @description  Add Process Name To Selected Log Snippets
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -126,41 +126,38 @@
 
   // clone the response to be handled by the original handler
   function responseHandler(response) {
-    // console.log(response.body);
     var clonedResponse = response.clone();
     response.json().then(jsonHandler);
     return clonedResponse;
   }
 
-  // replace the fetch event to allow the script to get log information
-  var old_fetch = unsafeWindow.fetch;
-  unsafeWindow.fetch = function (resource, init) {
-    console.log('request resource: ' + resource);
-    console.log(init);
-    // init.headers.contentType = "application/json; charset=utf-8";
-    return old_fetch(resource, init).then(responseHandler);
-  }
+  if (document.location.hash != '#infoview')
+  {
+    // replace the fetch event to allow the script to get log information
+    var old_fetch = unsafeWindow.fetch;
+    unsafeWindow.fetch = function (resource, init) {
+      return old_fetch(resource, init).then(responseHandler);
+    }
 
-  // https://stackoverflow.com/questions/3522090/event-when-window-location-href-changes
-  var currentHref = document.location.href;
-  var bodyList = document.querySelector("body")
+    // https://stackoverflow.com/questions/3522090/event-when-window-location-href-changes
+    var currentHref = document.location.href;
+    var bodyList = document.querySelector("body")
 
-  var observer = new MutationObserver(function (mutations) {
-    mutations.forEach(function (mutation) {
-      if (currentHref != document.location.href) {
-        currentHref = document.location.href;
-        /* Changed ! your code here */
-        console.log(`currentHref: ${currentHref}`);
-        populateSelectedLogs(currentHref);
-        setTimeout(updateProcessNames, 1000);
-      }
+    var observer = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
+        if (currentHref != document.location.href) {
+          currentHref = document.location.href;
+          populateSelectedLogs(currentHref);
+          setTimeout(updateProcessNames, 1000);
+        }
+      });
     });
-  });
 
-  var config = {
-    childList: true,
-    subtree: true
-  };
+    var config = {
+      childList: true,
+      subtree: true
+    };
 
-  observer.observe(bodyList, config);
+    observer.observe(bodyList, config);
+  }
 })();

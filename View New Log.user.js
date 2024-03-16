@@ -2,7 +2,7 @@
 // @name         View New Log
 // @namespace    https://support.concurcompleat.com/Logs/
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/View%20New%20Log.user.js
-// @version      0.10
+// @version      0.11
 // @description  View formatted log text
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -18,7 +18,6 @@
   var logs = [];
   var selectedLogs = [];
   var currentHref = document.location.href;
-  var old_fetch = unsafeWindow.fetch;
 
   function jsonHandler(json) {
     if (json.body != null) {
@@ -168,8 +167,8 @@
   }
 
   // replace the fetch event to allow the script to get log information
+  var old_fetch = unsafeWindow.fetch;
   unsafeWindow.fetch = function (resource, init) {
-    console.log('request resource: ' + resource);
     return old_fetch(resource, init).then(responseHandler);
   }
 
@@ -180,8 +179,6 @@
     mutations.forEach(function (mutation) {
       if (currentHref != document.location.href) {
         currentHref = document.location.href;
-        /* Changed ! your code here */
-        console.log(`currentHref: ${currentHref}`);
         populateSelectedLogs(currentHref);
         updateTableViewButton();
       }

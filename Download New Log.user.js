@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
-// @version      0.7
+// @version      0.8
 // @description  Download selected logs
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -18,7 +18,6 @@
   var logs = [];
   var selectedLogs = [];
   var currentHref = document.location.href;
-  var old_fetch = unsafeWindow.fetch;
 
   function findLogById(logId) {
     return logs.find(log => log.id == logId);
@@ -177,33 +176,36 @@
     return clonedResponse;
   }
 
-  // replace the fetch event to allow the script to get log information
-  unsafeWindow.fetch = function (resource, init) {
-    console.log('request resource: ' + resource);
-    console.log(init);
-    // init.headers.contentType = "application/json; charset=utf-8";
-    return old_fetch(resource, init).then(responseHandler);
-  }
+  if (document.location.hash != '#infoview') {
+    // replace the fetch event to allow the script to get log information
+    var old_fetch = unsafeWindow.fetch;
+    unsafeWindow.fetch = function (resource, init) {
+      console.log('request resource (download new log): ' + resource);
+      console.log(init);
+      // init.headers.contentType = "application/json; charset=utf-8";
+      return old_fetch(resource, init).then(responseHandler);
+    }
 
-  // https://stackoverflow.com/questions/3522090/event-when-window-location-href-changes
-  var bodyList = document.querySelector("body")
+    // https://stackoverflow.com/questions/3522090/event-when-window-location-href-changes
+    var bodyList = document.querySelector("body")
 
-  var observer = new MutationObserver(function (mutations) {
-    mutations.forEach(function (mutation) {
-      if (currentHref != document.location.href) {
-        currentHref = document.location.href;
-        /* Changed ! your code here */
-        console.log(`currentHref: ${currentHref}`);
-        populateSelectedLogs(currentHref);
-        updateDownloadButton();
-      }
+    var observer = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
+        if (currentHref != document.location.href) {
+          currentHref = document.location.href;
+          /* Changed ! your code here */
+          console.log(`currentHref (download new log): ${currentHref}`);
+          populateSelectedLogs(currentHref);
+          updateDownloadButton();
+        }
+      });
     });
-  });
 
-  var config = {
-    childList: true,
-    subtree: true
-  };
+    var config = {
+      childList: true,
+      subtree: true
+    };
 
-  observer.observe(bodyList, config);
+    observer.observe(bodyList, config);
+  }
 })();
