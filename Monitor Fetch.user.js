@@ -28,6 +28,7 @@
       const found = findLogById(json.id);
       if (found == null) {
         logs.push(json);
+        console.log('logs count: ' + logs.length);
         populateSelectedLogs(currentHref);
       }
     }
