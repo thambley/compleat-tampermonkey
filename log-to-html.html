@@ -179,6 +179,7 @@
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
+      user-select: none;
     }
 
     .onoffswitch-checkbox {
@@ -3420,7 +3421,6 @@ require.alias("list.pagination.js/index.js", "list.pagination.js/index.js");if (
     }
 
     .flatpickr-weekwrapper {
-      display: inline-block;
       float: left;
     }
 
@@ -3549,7 +3549,6 @@ require.alias("list.pagination.js/index.js", "list.pagination.js/index.js");if (
     .flatpickr-time .flatpickr-am-pm {
       height: inherit;
       display: inline-block;
-      float: left;
       line-height: inherit;
       color: #393939;
       font-weight: bold;
@@ -14776,8 +14775,8 @@ var resetTo = exports.resetTo = function resetTo(state) {
         const parser = new DOMParser();
         xmlNodes.forEach(element => {
           const text = element.innerText || element.textContent;
-          if (text.startsWith("<") && text.endsWith(">"))
-          {
+          const xmlCode = element.querySelector("code.xml");
+          if (xmlCode == null && text.startsWith("<") && text.endsWith(">")) {
             const doc = parser.parseFromString(text, "application/xml");
             const errorNode = doc.querySelector("parsererror");
             if (errorNode) {
