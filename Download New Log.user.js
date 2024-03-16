@@ -125,44 +125,46 @@
     const buttons = Array.from(document.querySelectorAll('button'));
     const snippetsButton = buttons.find(el => el.textContent === 'All Snippets' || el.textContent === 'First 15 Snippets');
 
-    var downloadButton = document.getElementById('DownloadButton');
+    if (snippetsButton != null) {
+      var downloadButton = document.getElementById('DownloadButton');
 
-    if (downloadButton == null && snippetsButton != null) {
-      const snippetsParent = snippetsButton.parentNode;
-      const buttonContainer = snippetsParent.parentNode;
+      if (downloadButton == null) {
+        const snippetsParent = snippetsButton.parentNode;
+        const buttonContainer = snippetsParent.parentNode;
 
-      const downloadDiv = document.createElement("div");
-      downloadDiv.classList.add("MuiGrid-root");
-      downloadDiv.classList.add("MuiGrid-item");
+        const downloadDiv = document.createElement("div");
+        downloadDiv.classList.add("MuiGrid-root");
+        downloadDiv.classList.add("MuiGrid-item");
 
-      downloadButton = document.createElement("a");
-      downloadButton.id = "DownloadButton";
-      downloadButton.classList.add("MuiButtonBase-root");
-      downloadButton.classList.add("MuiButton-root");
-      downloadButton.classList.add("MuiButton-contained");
-      downloadButton.classList.add("MuiButton-containedSizeSmall");
-      downloadButton.classList.add("MuiButton-sizeSmall");
-      downloadDiv.appendChild(downloadButton);
+        downloadButton = document.createElement("a");
+        downloadButton.id = "DownloadButton";
+        downloadButton.classList.add("MuiButtonBase-root");
+        downloadButton.classList.add("MuiButton-root");
+        downloadButton.classList.add("MuiButton-contained");
+        downloadButton.classList.add("MuiButton-containedSizeSmall");
+        downloadButton.classList.add("MuiButton-sizeSmall");
+        downloadDiv.appendChild(downloadButton);
 
-      var spanDownload = document.createElement("span");
-      downloadButton.classList.add("MuiButton-label");
-      spanDownload.innerText = "Download";
-      downloadButton.appendChild(spanDownload);
+        var spanDownload = document.createElement("span");
+        downloadButton.classList.add("MuiButton-label");
+        spanDownload.innerText = "Download";
+        downloadButton.appendChild(spanDownload);
 
-      buttonContainer.appendChild(downloadDiv);
-    }
-
-    var content = getContent();
-    if (content != null) {
-      if (downloadButton.classList.contains('Mui-disabled')) {
-        downloadButton.classList.remove('Mui-disabled');
+        buttonContainer.appendChild(downloadDiv);
       }
-      var file = new Blob([content], { type: 'text/plain' });
-      downloadButton.href = URL.createObjectURL(file);
-      downloadButton.download = getFilename(content); //file name
-    } else {
-      if (!downloadButton.classList.contains('Mui-disabled')) {
-        downloadButton.classList.add('Mui-disabled');
+
+      var content = getContent();
+      if (content != null) {
+        if (downloadButton.classList.contains('Mui-disabled')) {
+          downloadButton.classList.remove('Mui-disabled');
+        }
+        var file = new Blob([content], { type: 'text/plain' });
+        downloadButton.href = URL.createObjectURL(file);
+        downloadButton.download = getFilename(content); //file name
+      } else {
+        if (!downloadButton.classList.contains('Mui-disabled')) {
+          downloadButton.classList.add('Mui-disabled');
+        }
       }
     }
   }
