@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Add%20Process%20Name%20to%20New%20Log.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Add%20Process%20Name%20to%20New%20Log.user.js
-// @version      0.7
+// @version      0.8
 // @description  Add Process Name To Selected Log Snippets
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -28,11 +28,9 @@
       resetLabels();
     }
     if (json.body != null) {
-      console.log(json.id);
       const found = findLogById(json.id);
       if (found == null) {
         logs.push(json);
-        console.log('logs count: ' + logs.length);
         populateSelectedLogs(currentHref);
         setTimeout(updateProcessNames, 1000);
       }
@@ -59,7 +57,6 @@
         }
       }
     }
-    console.log('selected log count: ' + selectedLogs.length);
   }
 
 
