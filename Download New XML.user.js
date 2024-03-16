@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js
-// @version      0.7
+// @version      0.8
 // @description  Download selected xml
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -28,7 +28,6 @@
       locator = json.options.recordLocator;
     }
     if (json.body != null) {
-      console.log(json.id);
       const found = findLogById(json.id);
       if (found == null) {
         logs.push(json);
@@ -58,7 +57,6 @@
         }
       }
     }
-    console.log('selected log count: ' + selectedLogs.length);
   }
 
   function getContent() {
