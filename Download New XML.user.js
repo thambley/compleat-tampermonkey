@@ -88,8 +88,7 @@
   }
 
   function getRecordLocator() {
-    if (locator != null)
-    {
+    if (locator != null) {
       return locator;
     }
     const labels = Array.from(document.querySelectorAll('label'));
