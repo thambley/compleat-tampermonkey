@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
-// @version      0.8
+// @version      0.9
 // @description  Download selected logs
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  var locator = '';
+  var locator = null;
   var logs = [];
   var selectedLogs = [];
   var currentHref = document.location.href;
@@ -24,20 +24,11 @@
   }
 
   function jsonHandler(json) {
-    console.log(json);
-    if (json.options != null) {
-      locator = json.options.recordLocator;
-      console.log('locator: ' + locator);
-    }
-    if (json.results != null) {
-      console.log('results count: ' + json.results.length);
-    }
     if (json.body != null) {
-      console.log(json.id);
+      locator = json.name;
       const found = findLogById(json.id);
       if (found == null) {
         logs.push(json);
-        console.log('logs count: ' + logs.length);
         populateSelectedLogs(currentHref);
         updateDownloadButton();
       }
@@ -64,7 +55,6 @@
         }
       }
     }
-    console.log('selected log count: ' + selectedLogs.length);
   }
 
   function getContent() {
@@ -76,6 +66,9 @@
   }
 
   function getRecordLocator() {
+    if (locator != null) {
+      return locator;
+    }
     const labels = Array.from(document.querySelectorAll('label'));
     const recordLocatorLabel = labels.find(el => el.textContent === 'Record Locator');
     return recordLocatorLabel.nextSibling.querySelector('input').value;
@@ -170,7 +163,6 @@
 
   // clone the response to be handled by the original handler
   function responseHandler(response) {
-    // console.log(response.body);
     var clonedResponse = response.clone();
     response.json().then(jsonHandler);
     return clonedResponse;
@@ -180,9 +172,6 @@
     // replace the fetch event to allow the script to get log information
     var old_fetch = unsafeWindow.fetch;
     unsafeWindow.fetch = function (resource, init) {
-      console.log('request resource (download new log): ' + resource);
-      console.log(init);
-      // init.headers.contentType = "application/json; charset=utf-8";
       return old_fetch(resource, init).then(responseHandler);
     }
 
@@ -194,7 +183,6 @@
         if (currentHref != document.location.href) {
           currentHref = document.location.href;
           /* Changed ! your code here */
-          console.log(`currentHref (download new log): ${currentHref}`);
           populateSelectedLogs(currentHref);
           updateDownloadButton();
         }
