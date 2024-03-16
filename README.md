@@ -10,9 +10,15 @@ Output information to console log about fetch requests and responses.
 
 ## Download Log
 
-Add button to Compleat to download a log as a text file.
+Add button to Compleat log page to download a log as a text file.
 
 [link](https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js)
+
+## Download XML
+
+Add buttton to Compleat log page to download xml used to check for changes during ticketing
+
+[link](https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js)
 
 ## Add Process Name to Log
 
