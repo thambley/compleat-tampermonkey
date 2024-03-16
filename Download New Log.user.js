@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
-// @version      0.5
+// @version      0.6
 // @description  Download selected logs
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -127,7 +127,7 @@
 
     var downloadButton = document.getElementById('DownloadButton');
 
-    if (downloadButton == null) {
+    if (downloadButton == null && snippetsButton != null) {
       const snippetsParent = snippetsButton.parentNode;
       const buttonContainer = snippetsParent.parentNode;
 
