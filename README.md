@@ -2,6 +2,12 @@
 
 Tampermonkey scripts for Compleat logs
 
+## Monitor Fetch
+
+Output information to console log about fetch requests and responses.
+
+[link](https://github.com/thambley/compleat-tampermonkey/raw/main/Monitor%20Fetch.user.js)
+
 ## Download Log
 
 Add button to Compleat to download a log as a text file.
