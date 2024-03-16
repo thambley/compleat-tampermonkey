@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Monitor%20Fetch.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Monitor%20Fetch.user.js
-// @version      0.2
+// @version      0.3
 // @description  Watch fetch requests and responses on compleat logs and output information to console log
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -21,6 +21,7 @@
   }
 
   function jsonHandler(json) {
+    console.log(json);
     if (json.body != null) {
       console.log('log id: ' + json.id);
       console.log('locator: ' + json.name)
