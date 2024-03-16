@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js
-// @version      0.9
+// @version      0.10
 // @description  Download selected xml
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -192,7 +192,7 @@
     return clonedResponse;
   }
 
-  if (currentdocument.location.hash != '#infoview') {
+  if (document.location.hash != '#infoview') {
     // replace the fetch event to allow the script to get log information
     var old_fetch = unsafeWindow.fetch;
     unsafeWindow.fetch = function (resource, init) {
