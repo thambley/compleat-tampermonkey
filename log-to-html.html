@@ -14720,6 +14720,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
     // Init list
     var logTable = new List('logtable', options);
     logTable.on('updated', formatXml);
+    logTable.on('updated', formatJson);
     logTable.on('updated', convertDIR);
     logTable.on('updated', updateColumns);
 
@@ -14768,11 +14769,38 @@ var resetTo = exports.resetTo = function resetTo(state) {
       }
     }
 
+    function formatJson() {
+      var textNodes = document.getElementsByClassName('text');
+      var jsonNodes = Array.from(textNodes);
+      if (jsonNodes.length > 0) {
+        jsonNodes.forEach(element => {
+          const text = element.innerText || element.textContent;
+          const jsonCode = element.querySelector("code.json");
+          if (jsonCode == null && text.startsWith("{") && text.endsWith("}")) {
+            try {
+              const doc = JSON.parse(text);
+              var pre = document.createElement('pre');
+              var code = document.createElement('code');
+              code.className = 'json';
+              pre.appendChild(code);
+              var json = document.createTextNode(JSON.stringify(doc, null, 2));
+              code.appendChild(json);
+              element.removeChild(element.childNodes[0]);
+              element.appendChild(pre);
+            } catch (e) {
+              console.log("error while parsing in formatJson");
+              console.log(text);
+              console.error(e);
+            }
+          }
+        });
+      }
+    }
+
     function formatXml() {
       var textNodes = document.getElementsByClassName('text');
       var xmlNodes = Array.from(textNodes);
-      if (xmlNodes.length > 0)
-      {
+      if (xmlNodes.length > 0) {
         const parser = new DOMParser();
         xmlNodes.forEach(element => {
           const text = element.innerText || element.textContent;
