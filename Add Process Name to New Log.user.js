@@ -128,8 +128,7 @@
     return clonedResponse;
   }
 
-  if (document.location.hash != '#infoview')
-  {
+  if (document.location.hash != '#infoview') {
     // replace the fetch event to allow the script to get log information
     var old_fetch = unsafeWindow.fetch;
     unsafeWindow.fetch = function (resource, init) {
