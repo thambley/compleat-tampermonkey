@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js
-// @version      0.8
+// @version      0.9
 // @description  Download selected xml
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  var locator = '';
+  var locator = null;
   var logs = [];
   var selectedLogs = [];
   var currentHref = document.location.href;
@@ -24,9 +24,7 @@
   }
 
   function jsonHandler(json) {
-    if (json.options != null) {
-      locator = json.options.recordLocator;
-    }
+    locator = json.name;
     if (json.body != null) {
       const found = findLogById(json.id);
       if (found == null) {
@@ -90,6 +88,10 @@
   }
 
   function getRecordLocator() {
+    if (locator != null)
+    {
+      return locator;
+    }
     const labels = Array.from(document.querySelectorAll('label'));
     const recordLocatorLabel = labels.find(el => el.textContent === 'Record Locator');
     return recordLocatorLabel.nextSibling.querySelector('input').value;
@@ -100,7 +102,12 @@
   }
 
   function getGds(content) {
-    return content.includes('<PNRBFManagement') ? 'Apollo' : content.includes('DIR0DPN') ? 'Worldspan' : content.includes('SD000766') ? 'Sabre' : content.includes('http://xml.amadeus.com/') ? 'Amadeus' : 'Unknown';
+    return content.includes('<PNRBFManagement') && content.includes('<OwningCRS>1G</OwningCRS>') ? 'Galileo' :
+           content.includes('<PNRBFManagement') && content.includes('<OwningCRS>1V</OwningCRS>') ? 'Apollo' :
+           content.includes('DIR0DPN') ? 'Worldspan' :
+           content.includes('SD000766') ? 'Sabre' :
+           content.includes('http://xml.amadeus.com/') ? 'Amadeus' :
+           'Unknown';
   }
 
   function getFileDate(content) {
