@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js
-// @version      0.10
+// @version      0.11
 // @description  Download selected xml
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -24,8 +24,8 @@
   }
 
   function jsonHandler(json) {
-    locator = json.name;
     if (json.body != null) {
+      locator = json.name;
       const found = findLogById(json.id);
       if (found == null) {
         logs.push(json);
