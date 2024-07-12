@@ -3,18 +3,15 @@
 // @namespace    https://support.concurcompleat.com/task/
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Add%20Toggl%20Button%20to%20Clarity.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Add%20Toggl%20Button%20to%20Clarity.user.js
-// @version      0.5
+// @version      0.6
 // @description  Toggle button for Clarity
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/task/*
 // @connect      toggl.com
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addStyle
-// @grant        GM_getResourceText
 // @grant        GM_getValue
 // @grant        GM_setValue
-// @grant        GM_info
-// @grant        GM_registerMenuCommand
 // @grant        unsafeWindow
 // ==/UserScript==
 
@@ -456,8 +453,8 @@ text-decoration: underline;
                 this.getCurrentTimeEntry(this.stopTimeEntry);
                 return;
             }
-            // var url = `${$activeApiUrl}/workspaces/${$default_wid}/time_entries/${entryId}/stop`
-            var url = `${$activeApiUrl}/time_entries/${entryId}/stop`
+            var url = `${$activeApiUrl}/workspaces/${$default_wid}/time_entries/${entryId}/stop`
+            // var url = `${$activeApiUrl}/time_entries/${entryId}/stop`
             console.log(`attempting to patch ${url}`);
             GM_xmlhttpRequest({
                 method: "PATCH",
@@ -724,8 +721,8 @@ text-decoration: underline;
                 if (!entryId) {
                     return;
                 }
-                // var url = `${$activeApiUrl}/workspaces/${$default_wid}/time_entries/${entryId}/stop`;
-                var url = `${$activeApiUrl}/time_entries/${entryId}/stop`;
+                var url = `${$activeApiUrl}/workspaces/${$default_wid}/time_entries/${entryId}/stop`;
+                // var url = `${$activeApiUrl}/time_entries/${entryId}/stop`;
                 console.log(`attempting to patch ${url}`);
                 GM_xmlhttpRequest({
                     method: "PATCH",
