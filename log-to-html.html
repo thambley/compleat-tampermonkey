@@ -253,6 +253,88 @@
       right: 0px;
     }
   </style>
+  <!--<link href="stylesheets/radiotoggle.css" rel="stylesheet" type="text/css" />-->
+  <style>
+    /* TOGGLE STYLING */
+    .radioToggle {
+      margin: 0 0 0;
+      box-sizing: border-box;
+      font-size: 0;
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: flex-start;
+      align-items: stretch;
+
+      input {
+        width: 0;
+        height: 0;
+        position: absolute;
+        left: -9999px;
+      }
+
+      input + label {
+        margin: 0;
+        padding-left: 10px;
+        padding-right: 10px;
+        box-sizing: border-box;
+        position: relative;
+        display: inline-block;
+        border: solid 2px #999999;
+        background-color: #FFF;
+        color: #999999;
+        font-size: 12px;
+        line-height: 25px;
+        font-weight: bold;
+        text-align: center;
+        box-shadow: 0 0 0 rgba(255,255,255,0);
+        transition: 	border-color .15s ease-out,
+              color .25s ease-out,
+              background-color .15s ease-out,
+              box-shadow .15s ease-out;
+
+        /* ADD THESE PROPERTIES TO SWITCH FROM AUTO WIDTH TO FULL WIDTH */
+        /*flex: 0 0 50%; display: flex; justify-content: center; align-items: center;*/
+        /* ----- */
+
+        &:first-of-type {
+          border-radius: 15px 0 0 15px;
+          border-right: none;
+        }
+
+        &:last-of-type {
+          border-radius: 0 15px 15px 0;
+          border-left: none;
+        }
+      }
+
+      input:hover + label {
+        border-color: #999999;
+      }
+
+      input:checked + label {
+        background-color: #34A7C1;
+        color: #FFF;
+        box-shadow: 0 0 10px rgba(#66B3FB, .5);
+        border-color: #999999;
+        z-index: 1;
+      }
+
+      input:focus + label {
+        outline: dotted 1px #CCC;
+        outline-offset: .45rem;
+      }
+
+      @media (max-width: 800px) {
+        input + label {
+          padding: .75rem .25rem;
+          flex: 0 0 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+      }
+    }
+  </style>
   <!--http://www.listjs.com/-->
   <!--<link href="stylesheets/list.css" rel="stylesheet" type="text/css" />-->
   <style>
@@ -14779,6 +14861,15 @@ var resetTo = exports.resetTo = function resetTo(state) {
               </div>
             </div>
           </fieldset>
+          <fieldset id="textviewsettings">
+            <legend>Request/Response Text View</legend>
+            <div class="radioToggle">
+              <input type="radio" name="communicationDisplay" value="native" id="communicationNative" checked="checked" />
+              <label for="communicationNative">Native</label>
+              <input type="radio" name="communicationDisplay" value="xml" id="communicationXml" />
+              <label for="communicationXml">Formatted XML</label>
+            </div>
+          </fieldset>
         </form>
       </div>
       <div id="infoview">
@@ -14948,10 +15039,25 @@ var resetTo = exports.resetTo = function resetTo(state) {
       }
     }
 
+    // https://stackoverflow.com/a/15839283
+    function getRadioValue(radioName) {
+      var buttons = document.getElementsByName(radioName);
+      var buttonValue;
+      for (var i = 0; i < buttons.length; i++) {
+        if (buttons[i].checked) {
+          buttonValue = buttons[i].value;
+          break;
+        }
+      }
+      return buttonValue;
+    }
+
     function formatXml() {
       var textNodes = document.getElementsByClassName('text');
       var xmlNodes = Array.from(textNodes);
       if (xmlNodes.length > 0) {
+        var communicationDisplayValue = getRadioValue('communicationDisplay');
+        console.log("request/response display: " + communicationDisplayValue);
         const parser = new DOMParser();
         xmlNodes.forEach(element => {
           const text = element.innerText || element.textContent;
@@ -14962,14 +15068,42 @@ var resetTo = exports.resetTo = function resetTo(state) {
             if (errorNode) {
               console.log("error while parsing");
             } else {
+              var enableNative = (doc.firstChild.tagName == "SabreCommandLLSRQ" || doc.firstChild.tagName == "SabreCommandLLSRS");
               var pre = document.createElement('pre');
               var code = document.createElement('code');
-              code.className = 'formatted xml';
+              if (enableNative && communicationDisplayValue == "native") {
+                code.className = 'formatted xml hidden';
+              } else {
+                code.className = 'formatted xml';
+              }
               pre.appendChild(code);
               var xml = document.createTextNode(prettyXml(text));
               code.appendChild(xml);
               moveOriginal(element);
               element.appendChild(pre);
+
+              if (enableNative) {
+                var div = document.createElement('div');
+                if (communicationDisplayValue == "native") {
+                  div.className = 'native';
+                } else {
+                  div.className = 'native hidden';
+                }
+                var native = document.createTextNode(doc.documentElement.textContent);
+                div.appendChild(native);
+                element.appendChild(div);
+              }
+            }
+          } else if (xmlCode) {
+            const nativeCommunication = element.querySelector("div.native");
+            if (nativeCommunication) {
+              if (communicationDisplayValue == "native") {
+                nativeCommunication.classList.remove('hidden');
+                xmlCode.classList.add('hidden');
+              } else {
+                nativeCommunication.classList.add('hidden');
+                xmlCode.classList.remove('hidden');
+              }
             }
           }
         });
@@ -15007,6 +15141,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
       addEvent(document.getElementById('search'), 'submit', applySearch);
       addEvent(document.getElementById('clear_search_btn'), 'click', clearSearch);
       initColumns();
+      initCommunicationView();
       updateInfo();
       resizeData();
       processLogText(`%LOGTEXT%`);
@@ -15099,6 +15234,17 @@ var resetTo = exports.resetTo = function resetTo(state) {
       var displayMode = (checkbox.checked) ? 'table-cell' : 'none';
       Array.from(tbl.querySelectorAll('.' + colName)).forEach(cell => cell.style.display = displayMode);
       resizeData();
+    }
+
+    function initCommunicationView() {
+      var buttons = document.getElementsByName('communicationDisplay');
+      for (var i = 0; i < buttons.length; i++) {
+        buttons[i].addEventListener('change', updateCommunicationView);
+      }
+    }
+
+    function updateCommunicationView(evt) {
+      formatXml();
     }
 
     /** Search **/
