@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js
-// @version      0.13
+// @version      0.14
 // @description  Download selected xml
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -153,6 +153,7 @@
         }
 
         downloadXmlButton = document.createElement("a");
+        downloadXmlButton.id = "DownloadXmlButton";
         for (const className of snippetsButton.classList.values()) {
           // console.log('snippets class: ' + className);
           downloadXmlButton.classList.add(className);
