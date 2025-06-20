@@ -2,7 +2,7 @@
 // @name         View New Log
 // @namespace    https://support.concurcompleat.com/Logs/
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/View%20New%20Log.user.js
-// @version      0.18
+// @version      0.19
 // @description  View formatted log text
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -123,20 +123,20 @@
         const buttonContainer = snippetsParent.parentNode;
 
         const tableViewDiv = document.createElement("div");
-        tableViewDiv.classList.add("MuiGrid-root");
-        tableViewDiv.classList.add("MuiGrid-item");
+        for (const parentClass of snippetsParent.classList.values()) {
+          // console.log('snippet parent class: ' + parentClass);
+          tableViewDiv.classList.add(parentClass);
+        }
 
         tableViewButton = document.createElement("button");
         tableViewButton.id = "TableViewButton";
-        tableViewButton.classList.add("MuiButtonBase-root");
-        tableViewButton.classList.add("MuiButton-root");
-        tableViewButton.classList.add("MuiButton-contained");
-        tableViewButton.classList.add("MuiButton-containedSizeSmall");
-        tableViewButton.classList.add("MuiButton-sizeSmall");
+        for (const buttonClass of snippetsButton.classList.values()) {
+          // console.log('snippets class: ' + buttonClass);
+          tableViewButton.classList.add(buttonClass);
+        }
         tableViewDiv.appendChild(tableViewButton);
 
         var spanDownload = document.createElement("span");
-        tableViewButton.classList.add("MuiButton-label");
         spanDownload.innerText = "View as Table";
         tableViewButton.appendChild(spanDownload);
 
