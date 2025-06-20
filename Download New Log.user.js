@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
-// @version      0.9
+// @version      0.10
 // @description  Download selected logs
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -125,20 +125,20 @@
         const buttonContainer = snippetsParent.parentNode;
 
         const downloadDiv = document.createElement("div");
-        downloadDiv.classList.add("MuiGrid-root");
-        downloadDiv.classList.add("MuiGrid-item");
+        for (const downloadClass of snippetsParent.classList.values()) {
+            console.log('snippet parent class: ' + downloadClass);
+            downloadDiv.classList.add(downloadClass);
+        }
 
         downloadButton = document.createElement("a");
         downloadButton.id = "DownloadButton";
-        downloadButton.classList.add("MuiButtonBase-root");
-        downloadButton.classList.add("MuiButton-root");
-        downloadButton.classList.add("MuiButton-contained");
-        downloadButton.classList.add("MuiButton-containedSizeSmall");
-        downloadButton.classList.add("MuiButton-sizeSmall");
+        for (const className of snippetsButton.classList.values()) {
+          console.log('snippets class: ' + className);
+          downloadButton.classList.add(className);
+        }
         downloadDiv.appendChild(downloadButton);
 
         var spanDownload = document.createElement("span");
-        downloadButton.classList.add("MuiButton-label");
         spanDownload.innerText = "Download";
         downloadButton.appendChild(spanDownload);
 
