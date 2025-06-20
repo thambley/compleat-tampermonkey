@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
-// @version      0.11
+// @version      0.12
 // @description  Download selected logs
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -125,16 +125,16 @@
         const buttonContainer = snippetsParent.parentNode;
 
         const downloadDiv = document.createElement("div");
-        for (const downloadClass of snippetsParent.classList.values()) {
-            // console.log('snippet parent class: ' + downloadClass);
-            downloadDiv.classList.add(downloadClass);
+        for (const parentClass of snippetsParent.classList.values()) {
+            // console.log('snippet parent class: ' + parentClass);
+            downloadDiv.classList.add(parentClass);
         }
 
         downloadButton = document.createElement("a");
         downloadButton.id = "DownloadButton";
-        for (const className of snippetsButton.classList.values()) {
-          // console.log('snippets class: ' + className);
-          downloadButton.classList.add(className);
+        for (const buttonClass of snippetsButton.classList.values()) {
+          // console.log('snippets class: ' + buttonClass);
+          downloadButton.classList.add(buttonClass);
         }
         downloadDiv.appendChild(downloadButton);
 
