@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20Log.user.js
-// @version      0.10
+// @version      0.11
 // @description  Download selected logs
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
