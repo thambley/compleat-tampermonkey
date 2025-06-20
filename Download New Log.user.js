@@ -126,14 +126,14 @@
 
         const downloadDiv = document.createElement("div");
         for (const downloadClass of snippetsParent.classList.values()) {
-            console.log('snippet parent class: ' + downloadClass);
+            // console.log('snippet parent class: ' + downloadClass);
             downloadDiv.classList.add(downloadClass);
         }
 
         downloadButton = document.createElement("a");
         downloadButton.id = "DownloadButton";
         for (const className of snippetsButton.classList.values()) {
-          console.log('snippets class: ' + className);
+          // console.log('snippets class: ' + className);
           downloadButton.classList.add(className);
         }
         downloadDiv.appendChild(downloadButton);
