@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js
-// @version      0.11
+// @version      0.12
 // @description  Download selected xml
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -147,20 +147,20 @@
         const buttonContainer = snippetsParent.parentNode;
 
         const downloadDiv = document.createElement("div");
-        downloadDiv.classList.add("MuiGrid-root");
-        downloadDiv.classList.add("MuiGrid-item");
+        for (const downloadClass of snippetsParent.classList.values()) {
+          console.log('snippet parent class: ' + downloadClass);
+          downloadDiv.classList.add(downloadClass);
+        }
 
         downloadXmlButton = document.createElement("a");
-        downloadXmlButton.id = "DownloadXmlButton";
-        downloadXmlButton.classList.add("MuiButtonBase-root");
-        downloadXmlButton.classList.add("MuiButton-root");
-        downloadXmlButton.classList.add("MuiButton-contained");
-        downloadXmlButton.classList.add("MuiButton-containedSizeSmall");
-        downloadXmlButton.classList.add("MuiButton-sizeSmall");
+        for (const className of snippetsButton.classList.values()) {
+          console.log('snippets class: ' + className);
+          downloadButton.classList.add(className);
+        }
         downloadDiv.appendChild(downloadXmlButton);
 
         var spanDownload = document.createElement("span");
-        downloadXmlButton.classList.add("MuiButton-label");
+
         spanDownload.innerText = "XML";
         downloadXmlButton.appendChild(spanDownload);
 
