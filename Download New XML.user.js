@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Download%20New%20XML.user.js
-// @version      0.15
+// @version      0.16
 // @description  Download selected xml
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -104,7 +104,7 @@
     return content.includes('<PNRBFManagement') && content.includes('<OwningCRS>1G</OwningCRS>') ? 'Galileo' :
            content.includes('<PNRBFManagement') && content.includes('<OwningCRS>1V</OwningCRS>') ? 'Apollo' :
            content.includes('DIR0DPN') ? 'Worldspan' :
-           content.includes('SD000766') ? 'Sabre' :
+           content.includes('<SabreCommandLLSRQ') || content.includes('SD000766') ? 'Sabre' :
            content.includes('http://xml.amadeus.com/') ? 'Amadeus' :
            'Unknown';
   }
