@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Add%20Process%20Name%20to%20New%20Log.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Add%20Process%20Name%20to%20New%20Log.user.js
-// @version      0.11
+// @version      0.12
 // @description  Add Process Name To Selected Log Snippets
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -75,11 +75,12 @@
     if (currentNode != null) {
       var processNameNode = document.getElementById(processNameId);
       if (processNameNode == null) {
+        var currentLabel = currentNode.querySelector("h6");
         processNameNode = document.createElement("span");
         processNameNode.id = processNameId;
-        processNameNode.classList.add("MuiTypography-root");
-        processNameNode.classList.add("MuiTypography-subtitle2");
-
+        for (const labelClass of currentLabel.classList.values()) {
+          processNameNode.classList.add(labelClass);
+        }
         currentNode.children[currentNode.children.length - 1].appendChild(processNameNode);
       }
       processNameNode.innerText = processName;
