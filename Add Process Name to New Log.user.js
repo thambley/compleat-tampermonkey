@@ -3,7 +3,7 @@
 // @namespace    https://support.concurcompleat.com/Logs
 // @downloadURL  https://github.com/thambley/compleat-tampermonkey/raw/main/Add%20Process%20Name%20to%20New%20Log.user.js
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/Add%20Process%20Name%20to%20New%20Log.user.js
-// @version      0.10
+// @version      0.11
 // @description  Add Process Name To Selected Log Snippets
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -58,7 +58,7 @@
   function getWorkflowName(content) {
     var processRegex = new RegExp('(Workflow:|Name:) "([^"]+)"', 'g');
     var processMatches = [...content.matchAll(processRegex)];
-    var processMatch = processMatches.find((element) => { return (element[2] !== 'Determine PNR Type' && element[2] !== 'Determine PNR Type - IC Offline (ALTOUR)' && element[2] !== 'Determine PNR Type - IC Online (ALTOUR)') });
+    var processMatch = processMatches.find((wfElement) => { return (wfElement[1] == 'Workflow:') }) || processMatches.find((element) => { return (element[2] !== 'Determine PNR Type' && element[2] !== 'Determine PNR Type - IC Offline (ALTOUR)' && element[2] !== 'Determine PNR Type - IC Online (ALTOUR)') });
     var process = processMatch ? processMatch[2] : 'Unknown';
 
     return process;
