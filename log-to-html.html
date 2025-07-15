@@ -15052,7 +15052,44 @@ var resetTo = exports.resetTo = function resetTo(state) {
       return buttonValue;
     }
 
+    function addXmlNode(parser, element, text, communicationDisplayValue) {
+      const doc = parser.parseFromString(text, "application/xml");
+      const errorNode = doc.querySelector("parsererror");
+      if (errorNode) {
+        console.log("error while parsing in formatXml");
+        console.log(text);
+      } else {
+        // console.log(doc.firstChild.tagName);
+        var enableNative = (doc.firstChild.tagName == "SabreCommandLLSRQ" || doc.firstChild.tagName == "SabreCommandLLSRS");
+        var pre = document.createElement('pre');
+        var code = document.createElement('code');
+        if (enableNative && communicationDisplayValue == "native") {
+          code.className = 'formatted xml hidden';
+        } else {
+          code.className = 'formatted xml';
+        }
+        pre.appendChild(code);
+        var xml = document.createTextNode(prettyXml(text));
+        code.appendChild(xml);
+        moveOriginal(element);
+        element.appendChild(pre);
+
+        if (enableNative) {
+          var div = document.createElement('div');
+          if (communicationDisplayValue == "native") {
+            div.className = 'native';
+          } else {
+            div.className = 'native hidden';
+          }
+          var native = document.createTextNode(doc.documentElement.textContent);
+          div.appendChild(native);
+          element.appendChild(div);
+        }
+      }
+    }
+
     function formatXml() {
+      console.log("formatXml");
       var textNodes = document.getElementsByClassName('text');
       var xmlNodes = Array.from(textNodes);
       if (xmlNodes.length > 0) {
@@ -15062,39 +15099,21 @@ var resetTo = exports.resetTo = function resetTo(state) {
         xmlNodes.forEach(element => {
           const text = element.innerText || element.textContent;
           const xmlCode = element.querySelector("code.xml");
-          if (xmlCode == null && text.startsWith("<") && text.endsWith(">")) {
-            const doc = parser.parseFromString(text, "application/xml");
-            const errorNode = doc.querySelector("parsererror");
-            if (errorNode) {
-              console.log("error while parsing");
-            } else {
-              var enableNative = (doc.firstChild.tagName == "SabreCommandLLSRQ" || doc.firstChild.tagName == "SabreCommandLLSRS");
-              var pre = document.createElement('pre');
-              var code = document.createElement('code');
-              if (enableNative && communicationDisplayValue == "native") {
-                code.className = 'formatted xml hidden';
-              } else {
-                code.className = 'formatted xml';
-              }
-              pre.appendChild(code);
-              var xml = document.createTextNode(prettyXml(text));
-              code.appendChild(xml);
-              moveOriginal(element);
-              element.appendChild(pre);
-
-              if (enableNative) {
-                var div = document.createElement('div');
-                if (communicationDisplayValue == "native") {
-                  div.className = 'native';
-                } else {
-                  div.className = 'native hidden';
-                }
-                var native = document.createTextNode(doc.documentElement.textContent);
-                div.appendChild(native);
-                element.appendChild(div);
-              }
+          if (xmlCode == null) {
+            if (element.innerHTML.startsWith("Request: <") && element.innerHTML.endsWith(">")) {
+              addXmlNode(parser, element, element.innerHTML.replace("Request: <", "<"), communicationDisplayValue);
+              var categoryNodes = element.parentNode.getElementsByClassName('category');
+              var categoryNodeArray = Array.from(categoryNodes);
+              categoryNodeArray[0].innerText = categoryNodeArray[0].innerText + ' Request';
+            } else if (element.innerHTML.startsWith("Response: <") && element.innerHTML.endsWith(">")) {
+              addXmlNode(parser, element, element.innerHTML.replace("Response: <", "<"), communicationDisplayValue);
+              var categoryNodes = element.parentNode.getElementsByClassName('category');
+              var categoryNodeArray = Array.from(categoryNodes);
+              categoryNodeArray[0].innerText = categoryNodeArray[0].innerText + ' Response';
+            } else if (text.startsWith("<") && text.endsWith(">")) {
+              addXmlNode(parser, element, text, communicationDisplayValue);
             }
-          } else if (xmlCode) {
+          } else {
             const nativeCommunication = element.querySelector("div.native");
             if (nativeCommunication) {
               if (communicationDisplayValue == "native") {
@@ -15106,6 +15125,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
               }
             }
           }
+
         });
       }
     }
