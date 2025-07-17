@@ -15011,6 +15011,35 @@ var resetTo = exports.resetTo = function resetTo(state) {
       element.appendChild(newParent);
     }
 
+    function createChildElement(element, childType) {
+      var child = document.createElement(childType);
+      element.appendChild(child);
+      return child;
+    }
+
+    function createTextElement(element, text) {
+      var childTextNode = document.createTextNode(text);
+      element.appendChild(childTextNode);
+      return childTextNode;
+    }
+
+    function addJsonNode(element, text) {
+      try {
+        const doc = JSON.parse(text);
+        var pre = document.createElement('pre');
+        var code = document.createElement('code');
+        code.className = 'formatted json';
+        pre.appendChild(code);
+        createTextElement(code, JSON.stringify(doc, null, 2));
+        moveOriginal(element);
+        element.appendChild(pre);
+      } catch (e) {
+        console.log("error while parsing in addJsonNode");
+        console.log(text);
+        console.error(e);
+      }
+    }
+
     function formatJson() {
       var textNodes = document.getElementsByClassName('text');
       var jsonNodes = Array.from(textNodes);
@@ -15018,21 +15047,52 @@ var resetTo = exports.resetTo = function resetTo(state) {
         jsonNodes.forEach(element => {
           const text = element.innerText || element.textContent;
           const jsonCode = element.querySelector("code.json");
-          if (jsonCode == null && text.startsWith("{") && text.endsWith("}")) {
-            try {
-              const doc = JSON.parse(text);
-              var pre = document.createElement('pre');
-              var code = document.createElement('code');
-              code.className = 'formatted json';
-              pre.appendChild(code);
-              var json = document.createTextNode(JSON.stringify(doc, null, 2));
-              code.appendChild(json);
-              moveOriginal(element);
-              element.appendChild(pre);
-            } catch (e) {
-              console.log("error while parsing in formatJson");
-              console.log(text);
-              console.error(e);
+          const tableBreakdown = element.querySelector("table.breakdown");
+          if (jsonCode == null) {
+            if (text.startsWith("{") && text.endsWith("}")) {
+              addJsonNode(element, text);
+            } else if (text.startsWith("Method: ") || text.startsWith("StatusCode: ")) {
+              var lines = text.trim().split(/[\r\n]+/).filter((line) => line.trim() != '');
+              var firstLine = lines.shift().trim();
+              var secondLine = lines.shift().trim();
+              var lastLine = lines.pop().trim();
+              var secondToLastLine = lines.pop().trim();
+              if (secondLine == '{' && secondToLastLine == '}') {
+                // this is the kind of text we're looking for
+                var table = document.createElement('table');
+                table.className = 'breakdown';
+                // line 1:
+                //Method: POST, RequestUri: 'https://api.havail.sabre.com/v2/auth/token', Version: 1.1, Content: System.Net.Http.StringContent, Headers:
+                // StatusCode: 200, ReasonPhrase: 'OK', Version: 1.1, Content: System.Net.Http.StreamContent, Headers:
+                var line1Parts = firstLine.split(/, /);
+                var labelValueRegex = /^([^:]+):(.*)/;
+                for (var i = 0; i < line1Parts.length; i++) {
+                  var tr = createChildElement(table, 'tr');
+                  var labelValueMatches = line1Parts[i].match(labelValueRegex);
+                  var labelText = labelValueMatches[1];
+                  var valueText = labelValueMatches[2].trim();
+                  var labelTd = createChildElement(tr, 'td');
+                  createTextElement(labelTd, labelText + ":");
+                  var valueTd = createChildElement(tr, 'td');
+                  if (labelText == "Headers") {
+                    createTextElement(valueTd, lines.map(s => s.trim()).join('\n'));
+                  } else {
+                    createTextElement(valueTd, valueText);
+                  }
+                }
+                var payloadTr = createChildElement(table, 'tr');
+                var payloadLabelTd = createChildElement(payloadTr, 'td');
+                createTextElement(payloadLabelTd, "Payload:");
+                var payloadValueTd = createChildElement(payloadTr, 'td');
+                if (lastLine.startsWith("{") && lastLine.endsWith("}")) {
+                  addJsonNode(payloadValueTd, lastLine);
+                } else {
+                  var payloadPre = createChildElement(payloadValueTd, 'pre');
+                  createTextElement(payloadPre, lastLine);
+                }
+                moveOriginal(element);
+                element.appendChild(table);
+              }
             }
           }
         });
@@ -15069,8 +15129,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
           code.className = 'formatted xml';
         }
         pre.appendChild(code);
-        var xml = document.createTextNode(prettyXml(text));
-        code.appendChild(xml);
+        createTextElement(code, prettyXml(text))
         moveOriginal(element);
         element.appendChild(pre);
 
@@ -15081,15 +15140,13 @@ var resetTo = exports.resetTo = function resetTo(state) {
           } else {
             div.className = 'native hidden';
           }
-          var native = document.createTextNode(doc.documentElement.textContent);
-          div.appendChild(native);
+          createTextElement(div, doc.documentElement.textContent);
           element.appendChild(div);
         }
       }
     }
 
     function formatXml() {
-      console.log("formatXml");
       var textNodes = document.getElementsByClassName('text');
       var xmlNodes = Array.from(textNodes);
       if (xmlNodes.length > 0) {
@@ -15141,8 +15198,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
           code.className = 'xml';
           pre.appendChild(code);
           var plainXML = DIRTree.toXML();
-          var xml = document.createTextNode(plainXML);
-          code.appendChild(xml);
+          createTextElement(code, plainXML);
           moveOriginal(element);
           element.appendChild(pre);
         }
