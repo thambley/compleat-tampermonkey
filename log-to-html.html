@@ -15253,7 +15253,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
         var visibleChildNodes = Array.from(tallNode.children).filter(node => (!node.classList.contains('hidden')));
         if (visibleChildNodes.length == 1) {
           var visibleNode = visibleChildNodes[0];
-          if (typeof visibleNode.fullHeight == 'undefined') {
+          if (typeof visibleNode.fullHeight == 'undefined' && visibleNode.offsetHeight > 40) {
             visibleNode.fullHeight = visibleNode.offsetHeight;
             // console.log("1 visible child. Height: " + visibleNode.offsetHeight);
             // visibleNode.style.position = 'relative';
