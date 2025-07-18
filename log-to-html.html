@@ -14997,12 +14997,11 @@ var resetTo = exports.resetTo = function resetTo(state) {
     // utility function to process log text
     function processLogText(logText) {
       logTable.clear();
-      if (logText.length > 0) {
-        var logArray = compleatVendorDebug.parseLog(logText);
+      if (logText.trim().length > 0) {
+        var logArray = compleatVendorDebug.parseLog(logText.trim());
         const parser = new DOMParser();
         logArray.forEach(logItem => {
-          if (logItem.text.startsWith("<") && logItem.text.endsWith(">"))
-          {
+          if (logItem.text.startsWith("<") && logItem.text.endsWith(">")) {
             const doc = parser.parseFromString(logItem.text.replaceAll("&nbsp;", " "), "application/xml");
             const errorNode = doc.querySelector("parsererror");
             if (errorNode) {
