@@ -104,6 +104,11 @@
       text-shadow: #fff 0 1px 0;
       color: #5E6469
     }
+
+    td.native, div.native {
+      background-color: blue;
+      color: white;
+    }
   </style>
   <!--<link href="stylesheets/search.css" rel="stylesheet" type="text/css" />-->
   <style>
@@ -15123,10 +15128,11 @@ var resetTo = exports.resetTo = function resetTo(state) {
         var enableNative = (doc.firstChild.tagName == "SabreCommandLLSRQ" || doc.firstChild.tagName == "SabreCommandLLSRS");
         var pre = document.createElement('pre');
         var code = document.createElement('code');
+        code.className = 'formatted xml';
         if (enableNative && communicationDisplayValue == "native") {
-          code.className = 'formatted xml hidden';
+          pre.classList.add('hidden');
         } else {
-          code.className = 'formatted xml';
+          pre.classList.remove('hidden');
         }
         pre.appendChild(code);
         createTextElement(code, prettyXml(text))
@@ -15136,11 +15142,12 @@ var resetTo = exports.resetTo = function resetTo(state) {
         if (enableNative) {
           var div = document.createElement('div');
           if (communicationDisplayValue == "native") {
+            element.classList.add('native');
             div.className = 'native';
           } else {
             div.className = 'native hidden';
           }
-          createTextElement(div, doc.documentElement.textContent);
+          createTextElement(div, doc.documentElement.textContent.replaceAll("WARN.SWS.HOST.INTERMEDIATE_RESPONSE", ""));
           element.appendChild(div);
         }
       }
@@ -15171,14 +15178,17 @@ var resetTo = exports.resetTo = function resetTo(state) {
               addXmlNode(parser, element, text, communicationDisplayValue);
             }
           } else {
+            const pre = xmlCode.parentNode;
             const nativeCommunication = element.querySelector("div.native");
             if (nativeCommunication) {
               if (communicationDisplayValue == "native") {
                 nativeCommunication.classList.remove('hidden');
-                xmlCode.classList.add('hidden');
+                pre.classList.add('hidden');
+                element.classList.add('native');
               } else {
                 nativeCommunication.classList.add('hidden');
-                xmlCode.classList.remove('hidden');
+                pre.classList.remove('hidden');
+                element.classList.remove('native');
               }
             }
           }
