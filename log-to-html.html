@@ -109,6 +109,16 @@
       background-color: blue;
       color: white;
     }
+
+	.contracted {
+      cursor: zoom-in;
+      overflow: hidden;
+    }
+
+    .expanded {
+      cursor: zoom-out;
+      overflow: auto;
+    }
   </style>
   <!--<link href="stylesheets/search.css" rel="stylesheet" type="text/css" />-->
   <style>
@@ -14956,6 +14966,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
     };
     // Init list
     var logTable = new List('logtable', options);
+    logTable.on('updated', hideTallContent);
     logTable.on('updated', formatXml);
     logTable.on('updated', formatJson);
     logTable.on('updated', convertDIR);
@@ -15124,7 +15135,6 @@ var resetTo = exports.resetTo = function resetTo(state) {
         console.log("error while parsing in formatXml");
         console.log(text);
       } else {
-        // console.log(doc.firstChild.tagName);
         var enableNative = (doc.firstChild.tagName == "SabreCommandLLSRQ" || doc.firstChild.tagName == "SabreCommandLLSRS");
         var pre = document.createElement('pre');
         var code = document.createElement('code');
@@ -15158,7 +15168,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
       var xmlNodes = Array.from(textNodes);
       if (xmlNodes.length > 0) {
         var communicationDisplayValue = getRadioValue('communicationDisplay');
-        console.log("request/response display: " + communicationDisplayValue);
+        // console.log("request/response display: " + communicationDisplayValue);
         const parser = new DOMParser();
         xmlNodes.forEach(element => {
           const text = element.innerText || element.textContent;
@@ -15211,6 +15221,57 @@ var resetTo = exports.resetTo = function resetTo(state) {
           createTextElement(code, plainXML);
           moveOriginal(element);
           element.appendChild(pre);
+        }
+      });
+    }
+
+    function toggleFullView(element) {
+      while (typeof element.fullHeight == 'undefined' && element.parentNode) {
+        element = element.parentNode;
+      }
+
+      if (element.fullHeight) {
+        if (element.classList.contains('contracted')) {
+          // console.log('expanding to ' + element.fullHeight + 'px');
+          element.classList.remove('contracted');
+          element.classList.add('expanded');
+          element.style.height = element.fullHeight + 'px';
+        } else {
+          // console.log('contracting');
+          element.classList.remove('expanded');
+          element.classList.add('contracted');
+          element.style.height = '40px';
+        }
+      }
+    }
+
+    function hideTallContent() {
+      // console.log('hideTallContent');
+      var textNodes = document.getElementsByClassName('text');
+      var tallNodes = Array.from(textNodes).filter(node => (node.offsetHeight > 40));
+      tallNodes.forEach(tallNode => {
+        var visibleChildNodes = Array.from(tallNode.children).filter(node => (!node.classList.contains('hidden')));
+        if (visibleChildNodes.length == 1) {
+          var visibleNode = visibleChildNodes[0];
+          if (typeof visibleNode.fullHeight == 'undefined') {
+            visibleNode.fullHeight = visibleNode.offsetHeight;
+            // console.log("1 visible child. Height: " + visibleNode.offsetHeight);
+            // visibleNode.style.position = 'relative';
+            visibleNode.addEventListener("click", function(e) {
+              const source = e.target || e.srcElement;
+              toggleFullView(source, visibleNode.offsetHeight);
+            }, true);
+            toggleFullView(visibleNode, visibleNode.offsetHeight);
+          }
+        } else if (visibleChildNodes.length == 0) {
+          // console.log("0 children.");
+        } else {
+          console.log("More than 1 tall node in hideTallContent");
+          for (var n = 0; n < tallNode.children.length; n++) {
+            console.log(tallNode.children[n]);
+            console.log("childNodes[" + n + "].tagName: " + tallNode.children[n].tagName);
+            console.log("childNodes[" + n + "].classList.contains('hidden'): " + tallNode.children[n].classList.contains('hidden'));
+          }
         }
       });
     }
@@ -15331,6 +15392,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
 
     function updateCommunicationView(evt) {
       formatXml();
+      hideTallContent();
     }
 
     /** Search **/
