@@ -110,13 +110,11 @@
       color: white;
     }
 
-	.contracted {
-      cursor: zoom-in;
+	  .contracted {
       overflow: hidden;
     }
 
     .expanded {
-      cursor: zoom-out;
       overflow: auto;
     }
   </style>
@@ -15225,42 +15223,66 @@ var resetTo = exports.resetTo = function resetTo(state) {
     }
 
     function toggleFullView(element) {
-      while (typeof element.fullHeight == 'undefined' && element.parentNode) {
+      var button = element;
+      while (!element.classList.contains('text') && element.parentNode){
         element = element.parentNode;
       }
-
-      if (element.fullHeight) {
-        if (element.classList.contains('contracted')) {
-          // console.log('expanding to ' + element.fullHeight + 'px');
-          element.classList.remove('contracted');
-          element.classList.add('expanded');
-          element.style.height = element.fullHeight + 'px';
-        } else {
-          // console.log('contracting');
-          element.classList.remove('expanded');
-          element.classList.add('contracted');
-          element.style.height = '40px';
+      var tallNode = element;
+      var visibleChildNodes = Array.from(tallNode.children).filter(node => (node.tagName != 'BUTTON' && !node.classList.contains('hidden')));
+      if (visibleChildNodes.length == 1) {
+        var visibleNode = visibleChildNodes[0];
+        if (visibleNode.fullHeight) {
+          if (visibleNode.classList.contains('contracted')) {
+            // console.log('expanding to ' + element.fullHeight + 'px');
+            visibleNode.classList.remove('contracted');
+            visibleNode.classList.add('expanded');
+            visibleNode.style.height = visibleNode.fullHeight + 'px';
+            button.innerText = 'Collapse';
+          } else {
+            // console.log('contracting');
+            visibleNode.classList.remove('expanded');
+            visibleNode.classList.add('contracted');
+            visibleNode.style.height = '40px';
+            button.innerText = 'Expand';
+          }
         }
       }
+    }
+
+    function collapsibleButtonClick(evt) {
+      const source = evt.target || evt.srcElement;
+      toggleFullView(source);
     }
 
     function hideTallContent() {
       // console.log('hideTallContent');
       var textNodes = document.getElementsByClassName('text');
-      var tallNodes = Array.from(textNodes).filter(node => (node.offsetHeight > 40));
+      var tallNodes = Array.from(textNodes);
       tallNodes.forEach(tallNode => {
-        var visibleChildNodes = Array.from(tallNode.children).filter(node => (!node.classList.contains('hidden')));
+        var visibleChildNodes = Array.from(tallNode.children).filter(node => (node.tagName != 'BUTTON' && !node.classList.contains('hidden')));
+        var button = tallNode.querySelector("button");
         if (visibleChildNodes.length == 1) {
           var visibleNode = visibleChildNodes[0];
-          if (typeof visibleNode.fullHeight == 'undefined' && visibleNode.offsetHeight > 40) {
-            visibleNode.fullHeight = visibleNode.offsetHeight;
-            // console.log("1 visible child. Height: " + visibleNode.offsetHeight);
-            // visibleNode.style.position = 'relative';
-            visibleNode.addEventListener("click", function(e) {
-              const source = e.target || e.srcElement;
-              toggleFullView(source, visibleNode.offsetHeight);
-            }, true);
-            toggleFullView(visibleNode, visibleNode.offsetHeight);
+          if (visibleNode.offsetHeight > 40) {
+            if (typeof visibleNode.fullHeight == 'undefined') {
+              visibleNode.fullHeight = visibleNode.offsetHeight;
+              // console.log("1 visible child. Height: " + visibleNode.offsetHeight);
+              // visibleNode.style.position = 'relative';
+              if (button) {
+                console.log('button already exists')
+              } else {
+                button = document.createElement("button");
+                button.innerText = "Collapse";
+                tallNode.appendChild(button);
+                button.addEventListener("click", collapsibleButtonClick, true);
+              }
+              toggleFullView(button);
+            }
+            button.style.display = 'block';
+          } else if (typeof visibleNode.fullHeight == 'undefined') {
+            if (button) {
+              button.style.display = 'none';
+            }
           }
         } else if (visibleChildNodes.length == 0) {
           // console.log("0 children.");
