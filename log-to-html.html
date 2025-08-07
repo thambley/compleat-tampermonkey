@@ -15072,7 +15072,9 @@ var resetTo = exports.resetTo = function resetTo(state) {
               var secondToLastLine = lines.pop().trim();
               if (secondLine == '{' && secondToLastLine == '}') {
                 // this is the kind of text we're looking for
+                var div = document.createElement('div');
                 var table = document.createElement('table');
+                div.appendChild(table);
                 table.className = 'breakdown';
                 // line 1:
                 //Method: POST, RequestUri: 'https://api.havail.sabre.com/v2/auth/token', Version: 1.1, Content: System.Net.Http.StringContent, Headers:
@@ -15104,7 +15106,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
                   createTextElement(payloadPre, lastLine);
                 }
                 moveOriginal(element);
-                element.appendChild(table);
+                element.appendChild(div);
               }
             }
           }
