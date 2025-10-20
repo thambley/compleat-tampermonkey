@@ -15134,7 +15134,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
         console.log("error while parsing in formatXml");
         console.log(text);
       } else {
-        var enableNative = (doc.firstChild.tagName == "SabreCommandLLSRQ" || doc.firstChild.tagName == "SabreCommandLLSRS");
+        var enableNative = (doc.firstChild.tagName == "SabreCommandLLSRQ" || doc.firstChild.tagName == "SabreCommandLLSRS" || doc.firstChild.tagName == "Command_Cryptic" || doc.firstChild.tagName == "Command_CrypticReply");
         var pre = document.createElement('pre');
         var code = document.createElement('code');
         code.className = 'formatted xml';
