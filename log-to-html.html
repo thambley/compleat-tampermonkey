@@ -14217,7 +14217,11 @@ var resetTo = exports.resetTo = function resetTo(state) {
                   currentLogEntry.process = currentProcess = '';
                   currentLogEntry.routine = currentRoutine = '';
                 } else {
-                  alert('workflow name not found:' + currentLogEntry.text);
+                  if (currentLogEntry.text.includes('SimultaneousChangesException')) {
+                    console.log('QueueProcess entry contains SimultaneousChangesException');
+                  } else {
+                    alert('workflow name not found:' + currentLogEntry.text);
+                  }
                 }
                 break;
               case 'ProcessExecute':
