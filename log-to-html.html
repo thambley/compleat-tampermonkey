@@ -14200,7 +14200,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
               level: logMatch[5],
               dateTime: new Date(Date.UTC(parseInt('20' + logMatch[8], 10), parseInt(logMatch[6], 10) - 1, parseInt(logMatch[7], 10), parseInt(logMatch[9], 10), parseInt(logMatch[10], 10), parseInt(logMatch[11], 10), parseInt(logMatch[12], 10))),
               dateTimeText: '20' + logMatch[8] + '-' + rightAlignZeroPadding(logMatch[6]) + '-' + rightAlignZeroPadding(logMatch[7]) + ' ' + rightAlignZeroPadding(logMatch[9]) + ':' + logMatch[10] + ':' + logMatch[11] + '.' + logMatch[12],
-              text: logMatch[13].replace(/  /g, " &nbsp;"),
+              text: logMatch[13].replace(/  /g, " &nbsp;").replace(/\u{0087}/gu, "‡"),
               workflow: currentWorkflow,
               process: currentProcess,
               routine: currentRoutine,
