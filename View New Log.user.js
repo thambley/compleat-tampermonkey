@@ -2,7 +2,7 @@
 // @name         View New Log
 // @namespace    https://support.concurcompleat.com/Logs/
 // @updateURL    https://github.com/thambley/compleat-tampermonkey/raw/main/View%20New%20Log.user.js
-// @version      0.34
+// @version      0.35
 // @description  View formatted log text
 // @author       thambley@tlcorporate.com
 // @match        https://support.concurcompleat.com/Logs*
@@ -152,8 +152,9 @@
           // https://stackoverflow.com/questions/11965087/open-a-new-tab-window-and-write-something-to-it#11967627
           // https://stackoverflow.com/a/38866224 - addresses special handling of $$
           // replace \ with \\ in content to avoid occasional errors about octal escape sequences in template literals
+          // replace(/\u{0087}/gu, "‡") - replace special character found in Sabre logs with a viewable character
           var tab = window.open('about:blank', '_blank');
-          tab.document.write(atob(htmlContent).replace('%FILENAME%', getFilename(content)).split('%LOGTEXT%').join(content.replace(/\\/g, '\\\\').replace(/`/g, '\\`'))); // where 'html' is a variable containing your HTML
+          tab.document.write(atob(htmlContent).replace('%FILENAME%', getFilename(content)).split('%LOGTEXT%').join(content.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\u{0087}/gu, "‡")); // where 'html' is a variable containing your HTML
           tab.document.close(); // to finish loading the page
         };
       } else {
