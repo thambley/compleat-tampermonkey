@@ -14182,11 +14182,14 @@ var resetTo = exports.resetTo = function resetTo(state) {
         var currentProcess = '';
         var currentRoutine = '';
         var currentLocator = '';
+        var currentCustomer = '';
+        var currentBusinessUnit = '';
 
         var logEntryRegEx = /^(?:[\[]W#([0-9]+) [\(]([0-9]+)[\)] [A-Z\d]*?WRK([0-9]+)[\]] -- )?(?:[\{]([^\}]*)[\}] -- )?(?:[\<]([A-Za-z]+)[\>] -- )(?:([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{2}) ([0-9]{1,2}):([0-9]{2}):([0-9]{2}).([0-9]{3}) -- )(.*)/;
         var logSeparatorRegEx = /^[\-]{20}([\d]+)\/([\d]+)\/([\d]+) ([\d]+):([\d]+):([\d]+) ([AP]M) [\(]UTC[\)][\-]{20}/;
         var routineNameRegEx = /Routine ([A-Za-z0-9_]+)/;
         var nameRegEx = /"([^"]+)"/;
+        var pnrSetupRegex = /PNR located at (?:Intersection of '(.+?)' and the )?'(.+?)' Business Unit/;
         for (var lineNumber = 0; lineNumber < logLines.length; lineNumber++) {
           if (logEntryRegEx.test(logLines[lineNumber])) {
             logEntryNumber++;
@@ -14204,7 +14207,9 @@ var resetTo = exports.resetTo = function resetTo(state) {
               workflow: currentWorkflow,
               process: currentProcess,
               routine: currentRoutine,
-              pnrLocator: currentLocator
+              pnrLocator: currentLocator,
+              customer: currentCustomer,
+              businessUnit: currentBusinessUnit
             }
             logEntries[logEntryNumber] = currentLogEntry;
             switch (currentLogEntry.category) {
@@ -14252,6 +14257,18 @@ var resetTo = exports.resetTo = function resetTo(state) {
                   }
                 }
                 break;
+              case 'PnrSetup':
+                if (pnrSetupRegex.test(currentLogEntry.text)) {
+                  var pnrSetupMatch = pnrSetupRegex.exec(currentLogEntry.text);
+                  if (pnrSetupMatch[1]) {
+                    currentLogEntry.customer = currentCustomer = pnrSetupMatch[1];
+                  } else {
+                    currentLogEntry.customer = currentCustomer = '';
+                  }
+                  currentLogEntry.businessUnit = currentBusinessUnit = pnrSetupMatch[2];
+                } else {
+                  alert('PnrSetup regex does not match. text: ' + currentLogEntry.text);
+                }
               case '':
                 // check for level = 'debug' and presence of "encountered" in text
                 if ((currentLogEntry.level === 'Debug') && (currentLogEntry.text.substr(0, 11) === 'Encountered')) {
@@ -14678,6 +14695,8 @@ var resetTo = exports.resetTo = function resetTo(state) {
               <option value="worker">Worker</option>
               <option value="workstation">Workstation</option>
               <option value="workflow">Workflow</option>
+              <option value="customer">Customer</option>
+              <option value="businessUnit">Business Unit</option>
               <option value="process">Process</option>
               <option value="routine">Routine</option>
               <option value="pnrLocator">Locator</option>
@@ -14689,7 +14708,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
           </div>
           <div class="buttons">
             <input name="apply_search_btn" id="apply_search_btn" class="submit_btn" type="submit" value="Search" />
-            <input name="clear_search_btn" id="clear_search_btn" class="reset_btn" type="button" value="Clear" />
+            <input name="clear_search_btn" id="clear_search_btn" class="reset_btn" type="button" value="Clear"/>
           </div>
         </form>
       </div>
@@ -14697,10 +14716,8 @@ var resetTo = exports.resetTo = function resetTo(state) {
         <form id="filter">
           <div class="number_range input optional filter_form_field filter_number_range" id="q_line_number_input">
             <label class="label">Line</label>
-            <input size="12" maxlength="10" placeholder="From" value="" type="number" name="q[line_number_gteq]"
-              id="q_line_number_gteq">
-            <input size="12" maxlength="10" placeholder="To" value="" type="number" name="q[line_number_lteq]"
-              id="q_line_number_lteq">
+            <input size="12" maxlength="10" placeholder="From" value="" type="number" name="q[line_number_gteq]" id="q_line_number_gteq">
+            <input size="12" maxlength="10" placeholder="To" value="" type="number" name="q[line_number_lteq]" id="q_line_number_lteq">
           </div>
           <div class="select input optional filter_form_field filter_select" id="q_worker_input">
             <label for="q_worker" class="label">Worker:</label>
@@ -14740,14 +14757,12 @@ var resetTo = exports.resetTo = function resetTo(state) {
           </div>
           <div class="date_range input optional filter_form_field filter_date_range" id="q_date_time_input">
             <label class="label">Date/Time:</label>
-            <input class="datepicker" size="12" maxlength="10" placeholder="From" value="" type="text"
-              name="q[date_time_gteq]" id="q_date_time_gteq">
-            <input class="datepicker" size="12" maxlength="10" placeholder="To" value="" type="text"
-              name="q[date_time_lteq]" id="q_date_time_lteq">
+            <input class="datepicker" size="12" maxlength="10" placeholder="From" value="" type="text" name="q[date_time_gteq]" id="q_date_time_gteq">
+            <input class="datepicker" size="12" maxlength="10" placeholder="To" value="" type="text" name="q[date_time_lteq]" id="q_date_time_lteq">
           </div>
           <div class="buttons">
             <input name="apply_filters_btn" id="apply_filters_btn" class="submit_btn" type="submit" value="Filter" />
-            <input name="clear_filters_btn" id="clear_filters_btn" class="reset_btn" type="button" value="Clear" />
+            <input name="clear_filters_btn" id="clear_filters_btn" class="reset_btn" type="button" value="Clear"/>
           </div>
         </form>
       </div>
@@ -14759,13 +14774,12 @@ var resetTo = exports.resetTo = function resetTo(state) {
               <div class="setting item container">
                 <label for="lineonoffswitch" class="item">Line: </label>
                 <div class="onoffswitch">
-                  <input type="checkbox" name="lineNumberonoffswitch" class="onoffswitch-checkbox"
-                    id="lineNumberonoffswitch" checked>
-                  <label class="onoffswitch-label" for="lineNumberonoffswitch">
-                    <span class="onoffswitch-inner"></span>
-                    <span class="onoffswitch-switch"></span>
-                  </label>
-                </div>
+                    <input type="checkbox" name="lineNumberonoffswitch" class="onoffswitch-checkbox" id="lineNumberonoffswitch" checked>
+                    <label class="onoffswitch-label" for="lineNumberonoffswitch">
+                      <span class="onoffswitch-inner"></span>
+                      <span class="onoffswitch-switch"></span>
+                    </label>
+                  </div>
               </div>
               <div class="setting item container">
                 <label for="workeronoffswitch" class="item">Worker: </label>
@@ -14780,20 +14794,38 @@ var resetTo = exports.resetTo = function resetTo(state) {
               <div class="setting item container">
                 <label for="workstationonoffswitch" class="item">Workstation: </label>
                 <div class="onoffswitch">
-                  <input type="checkbox" name="workstationonoffswitch" class="onoffswitch-checkbox"
-                    id="workstationonoffswitch">
-                  <label class="onoffswitch-label" for="workstationonoffswitch">
+                    <input type="checkbox" name="workstationonoffswitch" class="onoffswitch-checkbox" id="workstationonoffswitch">
+                    <label class="onoffswitch-label" for="workstationonoffswitch">
+                      <span class="onoffswitch-inner"></span>
+                      <span class="onoffswitch-switch"></span>
+                    </label>
+                  </div>
+              </div>
+              <div class="setting item container">
+                <label for="workflowonoffswitch" class="item">Workflow: </label>
+                <div class="onoffswitch">
+                  <input type="checkbox" name="workflowonoffswitch" class="onoffswitch-checkbox" id="workflowonoffswitch" checked>
+                  <label class="onoffswitch-label" for="workflowonoffswitch">
                     <span class="onoffswitch-inner"></span>
                     <span class="onoffswitch-switch"></span>
                   </label>
                 </div>
               </div>
               <div class="setting item container">
-                <label for="workflowonoffswitch" class="item">Workflow: </label>
+                <label for="customeronoffswitch" class="item">Customer: </label>
                 <div class="onoffswitch">
-                  <input type="checkbox" name="workflowonoffswitch" class="onoffswitch-checkbox"
-                    id="workflowonoffswitch" checked>
-                  <label class="onoffswitch-label" for="workflowonoffswitch">
+                  <input type="checkbox" name="customeronoffswitch" class="onoffswitch-checkbox" id="customeronoffswitch" checked>
+                  <label class="onoffswitch-label" for="customeronoffswitch">
+                    <span class="onoffswitch-inner"></span>
+                    <span class="onoffswitch-switch"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="setting item container">
+                <label for="businessUnitonoffswitch" class="item">Business Unit: </label>
+                <div class="onoffswitch">
+                  <input type="checkbox" name="businessUnitonoffswitch" class="onoffswitch-checkbox" id="businessUnitonoffswitch" checked>
+                  <label class="onoffswitch-label" for="businessUnitonoffswitch">
                     <span class="onoffswitch-inner"></span>
                     <span class="onoffswitch-switch"></span>
                   </label>
@@ -14802,8 +14834,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
               <div class="setting item container">
                 <label for="processonoffswitch" class="item">Process: </label>
                 <div class="onoffswitch">
-                  <input type="checkbox" name="processonoffswitch" class="onoffswitch-checkbox" id="processonoffswitch"
-                    checked>
+                  <input type="checkbox" name="processonoffswitch" class="onoffswitch-checkbox" id="processonoffswitch" checked>
                   <label class="onoffswitch-label" for="processonoffswitch">
                     <span class="onoffswitch-inner"></span>
                     <span class="onoffswitch-switch"></span>
@@ -14813,8 +14844,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
               <div class="setting item container">
                 <label for="routineonoffswitch" class="item">Routine: </label>
                 <div class="onoffswitch">
-                  <input type="checkbox" name="routineonoffswitch" class="onoffswitch-checkbox" id="routineonoffswitch"
-                    checked>
+                  <input type="checkbox" name="routineonoffswitch" class="onoffswitch-checkbox" id="routineonoffswitch" checked>
                   <label class="onoffswitch-label" for="routineonoffswitch">
                     <span class="onoffswitch-inner"></span>
                     <span class="onoffswitch-switch"></span>
@@ -14824,8 +14854,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
               <div class="setting item container">
                 <label for="pnrLocatoronoffswitch" class="item">Locator: </label>
                 <div class="onoffswitch">
-                  <input type="checkbox" name="pnrLocatoronoffswitch" class="onoffswitch-checkbox"
-                    id="pnrLocatoronoffswitch" checked>
+                  <input type="checkbox" name="pnrLocatoronoffswitch" class="onoffswitch-checkbox" id="pnrLocatoronoffswitch" checked>
                   <label class="onoffswitch-label" for="pnrLocatoronoffswitch">
                     <span class="onoffswitch-inner"></span>
                     <span class="onoffswitch-switch"></span>
@@ -14835,8 +14864,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
               <div class="setting item container">
                 <label for="categoryonoffswitch" class="item">Category: </label>
                 <div class="onoffswitch">
-                  <input type="checkbox" name="categoryonoffswitch" class="onoffswitch-checkbox"
-                    id="categoryonoffswitch" checked>
+                  <input type="checkbox" name="categoryonoffswitch" class="onoffswitch-checkbox" id="categoryonoffswitch" checked>
                   <label class="onoffswitch-label" for="categoryonoffswitch">
                     <span class="onoffswitch-inner"></span>
                     <span class="onoffswitch-switch"></span>
@@ -14846,8 +14874,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
               <div class="setting item container">
                 <label for="levelonoffswitch" class="item">Level: </label>
                 <div class="onoffswitch">
-                  <input type="checkbox" name="levelonoffswitch" class="onoffswitch-checkbox" id="levelonoffswitch"
-                    checked>
+                  <input type="checkbox" name="levelonoffswitch" class="onoffswitch-checkbox" id="levelonoffswitch" checked>
                   <label class="onoffswitch-label" for="levelonoffswitch">
                     <span class="onoffswitch-inner"></span>
                     <span class="onoffswitch-switch"></span>
@@ -14857,8 +14884,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
               <div class="setting item container">
                 <label for="dateTimeTextonoffswitch" class="item">Date/Time: </label>
                 <div class="onoffswitch">
-                  <input type="checkbox" name="dateTimeTextonoffswitch" class="onoffswitch-checkbox"
-                    id="dateTimeTextonoffswitch" checked>
+                  <input type="checkbox" name="dateTimeTextonoffswitch" class="onoffswitch-checkbox" id="dateTimeTextonoffswitch" checked>
                   <label class="onoffswitch-label" for="dateTimeTextonoffswitch">
                     <span class="onoffswitch-inner"></span>
                     <span class="onoffswitch-switch"></span>
@@ -14868,8 +14894,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
               <div class="setting item container">
                 <label for="textonoffswitch" class="item"> Text: </label>
                 <div class="onoffswitch">
-                  <input type="checkbox" name="textonoffswitch" class="onoffswitch-checkbox" id="textonoffswitch"
-                    checked>
+                  <input type="checkbox" name="textonoffswitch" class="onoffswitch-checkbox" id="textonoffswitch" checked>
                   <label class="onoffswitch-label" for="textonoffswitch">
                     <span class="onoffswitch-inner"></span>
                     <span class="onoffswitch-switch"></span>
@@ -14891,14 +14916,10 @@ var resetTo = exports.resetTo = function resetTo(state) {
       </div>
       <div id="infoview">
         <div id="info">
-          <div id="infoFile" class="info"><span class="infoLabel">File name: </span><span id="infoFilename"></span>
-          </div>
-          <div id="infoSearch" class="info hidden"><span class="infoLabel">Search for </span><span
-              id="infoSearchText"></span></div>
-          <div id="infoSearchColumns" class="info hidden"><span class="infoLabel">in columns: </span><span
-              id="infoSearchColumnsText"></span></div>
-          <div id="infoFilter" class="info hidden"><span class="infoLabel">Filters: </span><span
-              id="infoFilterText"></span></div>
+          <div id="infoFile" class="info"><span class="infoLabel">File name: </span><span id="infoFilename"></span></div>
+          <div id="infoSearch" class="info hidden"><span class="infoLabel">Search for </span><span id="infoSearchText"></span></div>
+          <div id="infoSearchColumns" class="info hidden"><span class="infoLabel">in columns: </span><span id="infoSearchColumnsText"></span></div>
+          <div id="infoFilter" class="info hidden"><span class="infoLabel">Filters: </span><span id="infoFilterText"></span></div>
         </div>
       </div>
     </div>
@@ -14910,17 +14931,19 @@ var resetTo = exports.resetTo = function resetTo(state) {
     <div id="data">
       <table class="listable sortable">
         <colgroup>
-          <col class="lineNumber" />
-          <col class="worker" />
-          <col class="workstation" />
-          <col class="workflow" />
-          <col class="process" />
-          <col class="routine" />
-          <col class="pnrLocator" />
-          <col class="category" />
-          <col class="level" />
-          <col class="dateTimeText" />
-          <col class="text" />
+          <col class="lineNumber"/>
+          <col class="worker"/>
+          <col class="workstation"/>
+          <col class="workflow"/>
+          <col class="customer" />
+          <col class="businessUnit" />
+          <col class="process"/>
+          <col class="routine"/>
+          <col class="pnrLocator"/>
+          <col class="category"/>
+          <col class="level"/>
+          <col class="dateTimeText"/>
+          <col class="text"/>
         </colgroup>
         <thead>
           <tr>
@@ -14928,6 +14951,8 @@ var resetTo = exports.resetTo = function resetTo(state) {
             <th class="sort worker" data-sort="worker">Worker</th>
             <th class="sort workstation" data-sort="workstation">Workstation</th>
             <th class="sort workflow" data-sort="workflow">Workflow</th>
+            <th class="sort customer" data-sort="customer">Customer</th>
+            <th class="sort businessUnit" data-sort="businessUnit">Business Unit</th>
             <th class="sort process" data-sort="process">Process</th>
             <th class="sort routine" data-sort="routine">Routine</th>
             <th class="sort pnrLocator" data-sort="pnrLocator">Locator</th>
@@ -14943,6 +14968,8 @@ var resetTo = exports.resetTo = function resetTo(state) {
             <td class="worker"></td>
             <td class="workstation"></td>
             <td class="workflow"></td>
+            <td class="customer"></td>
+            <td class="businessUnit"></td>
             <td class="process"></td>
             <td class="routine"></td>
             <td class="pnrLocator"></td>
@@ -14959,7 +14986,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
     //list
     var options = {
       valueNames: ['lineNumber', 'worker', 'workstation', 'category', 'level', 'dateTimeText', 'text', 'workflow',
-        'process', 'routine', 'pnrLocator'
+        'process', 'routine', 'pnrLocator', 'customer', 'businessUnit'
       ],
       page: 20,
       plugins: [ListPagination({
@@ -14973,17 +15000,6 @@ var resetTo = exports.resetTo = function resetTo(state) {
     logTable.on('updated', formatJson);
     logTable.on('updated', convertDIR);
     logTable.on('updated', updateColumns);
-
-    // GDSX Log handling
-    /*
-    function processTextBox(e) {
-      e.preventDefault();
-      processLogText(document.getElementById('logtext').value);
-      info.fileName = 'Copy/Paste';
-      showInfo();
-      return false;
-    }
-    */
 
     function prettyXml(xmlText) {
       var format = require('xml-formatter');
@@ -15212,7 +15228,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
 
     function convertDIR() {
       var textNodes = document.getElementsByClassName('text');
-      var dirNodes = Array.from(textNodes).filter(node => (node.innerText || node.textContent).substring(0, 3) === 'DIR');
+      var dirNodes = Array.from(textNodes).filter(node => (node.innerText || node.textContent).substring(0, 3) === 'DIR' );
       dirNodes.forEach(element => {
         var DIRTree = wspanDIR.parseDIRMessage(element.innerText || element.textContent);
         if (DIRTree) {
