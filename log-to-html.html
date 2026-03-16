@@ -117,6 +117,12 @@
     .expanded {
       overflow: auto;
     }
+
+    /*
+    tr.inforow td {
+      color: darkblue;
+    }
+    */
   </style>
   <!--<link href="stylesheets/search.css" rel="stylesheet" type="text/css" />-->
   <style>
@@ -15001,6 +15007,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
     // Init list
     var logTable = new List('logtable', options);
     logTable.on('updated', hideTallContent);
+    logTable.on('updated', formatInfo);
     logTable.on('updated', formatXml);
     logTable.on('updated', formatJson);
     logTable.on('updated', convertDIR);
@@ -15184,6 +15191,22 @@ var resetTo = exports.resetTo = function resetTo(state) {
           createTextElement(div, doc.documentElement.textContent.replaceAll("WARN.SWS.HOST.INTERMEDIATE_RESPONSE", ""));
           element.appendChild(div);
         }
+      }
+    }
+
+    function formatInfo() {
+      var textNodes = document.getElementsByClassName('text');
+      var nodes = Array.from(textNodes);
+      if (nodes.length > 0) {
+        nodes.forEach(element => {
+          var levelNodes = element.parentNode.getElementsByClassName('level');
+          var levelNodeArray = Array.from(levelNodes);
+          if (levelNodeArray[0].innerText == 'Info') {
+            if (!element.parentNode.classList.contains('inforow')) {
+              element.parentNode.classList.add('inforow');
+            }
+          }
+        });
       }
     }
 
