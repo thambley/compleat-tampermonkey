@@ -15278,6 +15278,8 @@ var resetTo = exports.resetTo = function resetTo(state) {
         element = element.parentNode;
       }
       var tallNode = element;
+      var dataElement = document.getElementById('data');
+      var dataHeight = (getBodyHeight() - dataElement.offsetTop);
       var visibleChildNodes = Array.from(tallNode.children).filter(node => (node.tagName != 'BUTTON' && !node.classList.contains('hidden')));
       if (visibleChildNodes.length == 1) {
         var visibleNode = visibleChildNodes[0];
@@ -15286,13 +15288,22 @@ var resetTo = exports.resetTo = function resetTo(state) {
             // console.log('expanding to ' + element.fullHeight + 'px');
             visibleNode.classList.remove('contracted');
             visibleNode.classList.add('expanded');
-            visibleNode.style.height = visibleNode.fullHeight + 'px';
+            if (dataHeight < visibleNode.fullHeight) {
+              var visibleNodePadding = element.offsetHeight - visibleNode.offsetHeight;
+              visibleNode.style.height = (dataHeight - visibleNodePadding) + 'px';
+            } else {
+              visibleNode.style.height = visibleNode.fullHeight + 'px';
+            }
+            if (element.offsetTop + element.offsetHeight > dataElement.offsetTop + dataHeight) {
+              dataElement.scrollTop = element.offsetTop - (dataHeight - element.offsetHeight);
+            }
             button.innerText = 'Collapse';
           } else {
             // console.log('contracting');
             visibleNode.classList.remove('expanded');
             visibleNode.classList.add('contracted');
             visibleNode.style.height = '40px';
+            visibleNode.scrollTop = 0;
             button.innerText = 'Expand';
           }
         }
@@ -15751,18 +15762,23 @@ var resetTo = exports.resetTo = function resetTo(state) {
     /** end filters **/
 
     //display handling
-    //http://stackoverflow.com/questions/33080/setting-the-height-of-a-div-dynamically
-    function resizeElementHeight(element) {
-      var height = 0;
+    function getBodyHeight() {
+      bodyHeight = 0;
       var body = window.document.body;
       if (window.innerHeight) {
-        height = window.innerHeight;
+        bodyHeight = window.innerHeight;
       } else if (body.parentElement.clientHeight) {
-        height = body.parentElement.clientHeight;
+        bodyHeight = body.parentElement.clientHeight;
       } else if (body && body.clientHeight) {
-        height = body.clientHeight;
+        bodyHeight = body.clientHeight;
       }
-      element.style.height = (((height - element.offsetTop)) + "px");
+      return bodyHeight;
+    }
+
+    //http://stackoverflow.com/questions/33080/setting-the-height-of-a-div-dynamically
+    function resizeElementHeight(element) {
+      var bodyHeight = getBodyHeight();
+      element.style.height = (((bodyHeight - element.offsetTop)) + "px");
     }
 
     // add event cross browser
