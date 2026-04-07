@@ -15310,9 +15310,27 @@ var resetTo = exports.resetTo = function resetTo(state) {
       }
     }
 
+    function copyText(element) {
+      var button = element;
+      while (!element.classList.contains('text') && element.parentNode){
+        element = element.parentNode;
+      }
+      var tallNode = element;
+      var visibleChildNodes = Array.from(tallNode.children).filter(node => (node.tagName != 'BUTTON' && !node.classList.contains('hidden')));
+      if (visibleChildNodes.length == 1) {
+        var visibleNode = visibleChildNodes[0];
+        navigator.clipboard.writeText(visibleNode.innerText);
+      }
+    }
+
     function collapsibleButtonClick(evt) {
       const source = evt.target || evt.srcElement;
       toggleFullView(source);
+    }
+
+    function copyButtonClick(evt) {
+      const source = evt.target || evt.srcElement;
+      copyText(source);
     }
 
     function hideTallContent() {
@@ -15322,6 +15340,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
       tallNodes.forEach(tallNode => {
         var visibleChildNodes = Array.from(tallNode.children).filter(node => (node.tagName != 'BUTTON' && !node.classList.contains('hidden')));
         var button = tallNode.querySelector("button");
+        var copyButton = tallNode.querySelector("button.copy");
         if (visibleChildNodes.length == 1) {
           var visibleNode = visibleChildNodes[0];
           if (visibleNode.offsetHeight > 40) {
@@ -15334,12 +15353,23 @@ var resetTo = exports.resetTo = function resetTo(state) {
               } else {
                 button = document.createElement("button");
                 button.innerText = "Collapse";
+                button.style.marginLeft = '5px';
                 tallNode.appendChild(button);
                 button.addEventListener("click", collapsibleButtonClick, true);
               }
               toggleFullView(button);
+              if (copyButton) {
+                console.log('copy button already exists')
+              } else {
+                copyButton = document.createElement("button");
+                copyButton.innerText = "Copy";
+                copyButton.classList.add('copy');
+                copyButton.style.marginLeft = '5px';
+                tallNode.appendChild(copyButton);
+                copyButton.addEventListener("click", copyButtonClick, true);
+              }
             }
-            button.style.display = 'block';
+            // button.style.display = 'block';
           } else if (typeof visibleNode.fullHeight == 'undefined') {
             if (button) {
               button.style.display = 'none';
