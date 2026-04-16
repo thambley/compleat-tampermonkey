@@ -123,6 +123,11 @@
       color: darkblue;
     }
     */
+
+    tr.warningrow td.text {
+      background-color: yellow;
+    color: red;
+}
   </style>
   <!--<link href="stylesheets/search.css" rel="stylesheet" type="text/css" />-->
   <style>
@@ -15204,6 +15209,7 @@ var resetTo = exports.resetTo = function resetTo(state) {
     var logTable = new List('logtable', options);
     logTable.on('updated', hideTallContent);
     logTable.on('updated', formatInfo);
+    logTable.on('updated', formatWarning);
     logTable.on('updated', formatXml);
     logTable.on('updated', formatJson);
     logTable.on('updated', convertDIR);
@@ -15400,6 +15406,22 @@ var resetTo = exports.resetTo = function resetTo(state) {
           if (levelNodeArray[0].innerText == 'Info') {
             if (!element.parentNode.classList.contains('inforow')) {
               element.parentNode.classList.add('inforow');
+            }
+          }
+        });
+      }
+    }
+
+    function formatWarning() {
+      var textNodes = document.getElementsByClassName('text');
+      var nodes = Array.from(textNodes);
+      if (nodes.length > 0) {
+        nodes.forEach(element => {
+          var levelNodes = element.parentNode.getElementsByClassName('level');
+          var levelNodeArray = Array.from(levelNodes);
+          if (levelNodeArray[0].innerText == 'Warning') {
+            if (!element.parentNode.classList.contains('warningrow')) {
+              element.parentNode.classList.add('warningrow');
             }
           }
         });
