@@ -15342,6 +15342,35 @@ var resetTo = exports.resetTo = function resetTo(state) {
                 moveOriginal(element);
                 element.appendChild(div);
               }
+            } else if (/^Status Code: [0-9]+, Resp: .*$/.test(text)) {
+              var div = document.createElement('div');
+              var table = document.createElement('table');
+              div.appendChild(table);
+              table.className = 'breakdown';
+              var partsRegex = /^Status Code: ([0-9]+), Resp: (.*)/;
+              var partsMatches = text.match(partsRegex);
+              var statusCodeText = partsMatches[1];
+              var respText = partsMatches[2].trim();
+
+              var statusTr = createChildElement(table, 'tr');
+              var statusTd = createChildElement(statusTr, 'td');
+              createTextElement(statusTd, "Status Code: " + statusCodeText);
+
+              var respLabelTr = createChildElement(table, 'tr');
+              var respLabelTd = createChildElement(respLabelTr, 'td');
+              createTextElement(respLabelTd, "Resp:");
+
+              var respTr = createChildElement(table, 'tr');
+              var respTd = createChildElement(respTr, 'td');
+              if (respText.startsWith("{") && respText.endsWith("}")) {
+                addJsonNode(respTd, respText);
+              } else {
+                var respPre = createChildElement(respTd, 'pre');
+                createTextElement(respPre, respText);
+              }
+
+              moveOriginal(element);
+              element.appendChild(div);
             }
           }
         });
